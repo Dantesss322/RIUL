@@ -1,3 +1,51 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, field, button %}
 {% set page = "logro_nuevo" %}
 {% block title %}Registrar logro{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-2xl">
+  {{ page_header("Registrar logro", "Cuatro pasos para reconocer tu actividad investigativa.") }}
+
+  {# Asistente de 4 pasos (RNF-3): js/core/dom.js (iniciarAsistente) muestra un paso a la vez. #}
+  <div data-wizard data-envio="Registrar logro">
+    <ol class="stepper" aria-label="Progreso" data-stepper></ol>
+
+    <form novalidate>
+      <section class="card space-y-5" data-step="Tipo">
+        {{ field("Tipo de logro", "idTipoLogro", type="select", hint="El XP depende del tipo y se asigna cuando el administrador lo aprueba.") }}
+      </section>
+
+      <section class="card space-y-5" data-step="Evidencia" hidden>
+        {{ field("Evidencia", "evidencia", type="file", hint="Adjunta el certificado, artículo o soporte que respalde el logro.") }}
+      </section>
+
+      <section class="card space-y-5" data-step="Detalles" hidden>
+        {{ field("Título", "titulo", placeholder="Ej. Ponencia en el Congreso de Ingeniería") }}
+        {{ field("Descripción (opcional)", "descripcion", type="textarea") }}
+        {{ field("Semillero que recibe el XP", "idSemillero", type="select") }}
+      </section>
+
+      <section class="card space-y-5" data-step="Confirmar" hidden>
+        <dl class="grid gap-3 text-[15px] sm:grid-cols-2">
+          <div><dt class="text-sm text-ink-soft">Tipo</dt><dd class="font-medium" data-bind="tipo"></dd></div>
+          <div><dt class="text-sm text-ink-soft">Semillero</dt><dd class="font-medium" data-bind="semillero"></dd></div>
+          <div class="sm:col-span-2"><dt class="text-sm text-ink-soft">Título</dt><dd class="font-medium" data-bind="titulo"></dd></div>
+          <div class="sm:col-span-2"><dt class="mb-1 text-sm text-ink-soft">Evidencia</dt><dd data-region="evidencia"></dd></div>
+        </dl>
+        <p class="rounded-xl bg-accent-soft px-4 py-3 text-sm text-accent" data-roles="docente_lider">
+          Como líder, tu registro pasa directo a validación del administrador.
+        </p>
+        <p class="rounded-xl bg-accent-soft px-4 py-3 text-sm text-accent" data-roles="estudiante">
+          Tu líder revisará el logro y lo enviará a validación del administrador.
+        </p>
+      </section>
+
+      <div class="mt-5 flex items-center justify-between">
+        {{ button("Atrás", variant="secondary", icon="arrow-left-line", data_back=True) }}
+        {{ button("Continuar", type="submit", data_next=True) }}
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

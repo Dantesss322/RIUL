@@ -1,3 +1,22 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, tabs %}
 {% set page = "validaciones" %}
 {% block title %}Validaciones{% endblock %}
+
+{% block content %}
+{# La descripcion depende del rol: js/pages/validaciones.js la escribe. #}
+{{ page_header("Validaciones", description_bind="descripcion") }}
+
+{# Cada rol ve solo sus bandejas. El numero junto al nombre es la cantidad de pendientes. #}
+<div class="mb-4">{{ tabs([
+  {"id": "logros_admin", "label": "Logros", "roles": "administrador"},
+  {"id": "postulaciones", "label": "Postulaciones", "roles": "administrador"},
+  {"id": "vinculaciones", "label": "Vinculaciones", "roles": "docente_lider"},
+  {"id": "publicaciones", "label": "Publicaciones", "roles": "docente_lider"},
+  {"id": "logros_lider", "label": "Logros", "roles": "docente_lider"},
+]) }}</div>
+
+<section class="card">
+  <div data-region="bandeja"></div>
+</section>
+{% endblock %}

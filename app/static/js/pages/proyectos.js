@@ -1,26 +1,15 @@
-/** Proyectos de los semilleros del usuario (todos para el administrador): busqueda y filtro por estado. */
-import { html, mount, button, card, cargar, emptyState, estadoBadge, field, pageHeader } from '../core/ui.js';
+/**
+ * Proyectos de los semilleros del usuario (todos para el administrador): busqueda y filtro por estado.
+ * El encabezado y el formulario de filtros los escribe templates/proyectos.html.
+ */
+import { html, mount, card, cargar, emptyState, estadoBadge } from '../core/ui.js';
 import { proyectosApi } from '../core/api.js';
-import { ESTADOS, ESTADOS_PROYECTO, toOptions } from '../core/dominio.js';
 import { plural } from '../core/format.js';
-
-const ESTADOS_OPCIONES = toOptions(ESTADOS_PROYECTO, ESTADOS);
 
 export default function iniciar({ root }) {
   let filtros = { q: '', estado: '' };
+  const listado = root.querySelector('[data-region="listado"]');
 
-  mount(
-    root,
-    html`${pageHeader({ title: 'Proyectos', description: 'Seguimiento de los proyectos de investigación de tus semilleros.' })}
-      <form role="search" class="mb-6 flex flex-wrap items-end gap-3" data-form="filtros">
-        ${field({ label: 'Buscar proyectos', name: 'q', type: 'search', placeholder: 'Nombre del proyecto', className: 'grow' })}
-        ${field({ label: 'Estado', name: 'estado', type: 'select', placeholder: 'Todos', options: ESTADOS_OPCIONES })}
-        ${button({ type: 'submit', icon: 'search-line', children: 'Filtrar' })}
-      </form>
-      <div id="listado"></div>`,
-  );
-
-  const listado = root.querySelector('#listado');
   const cargarListado = () =>
     cargar(listado, () => proyectosApi.listar(filtros), (filas) =>
       mount(

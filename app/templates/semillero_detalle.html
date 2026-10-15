@@ -1,3 +1,55 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, card, tabs, field, button, modal_actions %}
 {% set page = "semillero_detalle" %}
+{% set roles_integrante = ["Coinvestigador", "Joven investigador", "Auxiliar de investigación"] %}
 {% block title %}Semillero{% endblock %}
+
+{% block content %}
+{# Marco que js/pages/semillero_detalle.js muestra cuando llega el semillero. Los elementos con
+   data-lider solo se ven para el docente lider de este semillero. #}
+<div data-carga>
+  {% call page_header("", title_bind="nombre", description_bind="detalle") %}
+    {{ button("Agregar integrante", variant="secondary", icon="user-add-line", data_action="agregar", data_lider=True, hidden=True) }}
+    {{ button("Registrar proyecto", icon="add-line", data_action="proyecto", data_lider=True, hidden=True) }}
+  {% endcall %}
+
+  {% call card(classes="mb-6") %}
+    <p class="mb-4 text-ink-soft" data-bind="descripcion"></p>
+    <div class="grid gap-4 sm:grid-cols-[auto_1fr] sm:items-center" data-region="progreso"></div>
+  {% endcall %}
+
+  <div class="mb-4">
+    {{ tabs([
+      {"id": "integrantes", "label": "Integrantes"},
+      {"id": "proyectos", "label": "Proyectos"},
+      {"id": "insignias", "label": "Insignias"},
+      {"id": "solicitudes", "label": "Solicitudes", "hidden": True},
+    ]) }}
+  </div>
+
+  <section class="card">
+    <div data-panel="integrantes" data-region="integrantes"></div>
+    <div data-panel="proyectos" data-region="proyectos" hidden></div>
+    <div data-panel="insignias" data-region="insignias" hidden></div>
+    <div data-panel="solicitudes" data-region="solicitudes" hidden></div>
+  </section>
+</div>
+
+{# Formularios de los modales #}
+<template data-modal="agregar-integrante" data-title="Agregar integrante">
+  <form class="space-y-4">
+    {{ field("Estudiante", "idUsuario", type="select", required=True) }}
+    {{ field("Rol en el semillero", "rol", type="select", options=roles_integrante, required=True) }}
+    {{ modal_actions("Agregar") }}
+  </form>
+</template>
+
+<template data-modal="registrar-proyecto" data-title="Registrar proyecto">
+  <form class="space-y-4">
+    {{ field("Nombre del proyecto", "nombre", required=True) }}
+    {{ field("Descripción", "descripcion", type="textarea", required=True) }}
+    {{ field("Mostrar en la página pública", "esPublico", type="checkbox", hint="Los visitantes podrán ver el nombre y la descripción del proyecto.") }}
+    {{ modal_actions("Registrar") }}
+  </form>
+</template>
+{% endblock %}

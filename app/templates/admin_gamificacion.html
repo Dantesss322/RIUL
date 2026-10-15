@@ -1,3 +1,47 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, tabs, gestor, field, modal_actions %}
 {% set page = "admin_gamificacion" %}
 {% block title %}Reglas de gamificación{% endblock %}
+
+{% block content %}
+{{ page_header("Reglas de gamificación", "Define cuánto XP otorga cada logro, cuándo se sube de nivel y qué insignias existen.") }}
+
+<div class="mb-4">{{ tabs([
+  {"id": "tipos-logro", "label": "Tipos de logro"},
+  {"id": "niveles", "label": "Niveles"},
+  {"id": "insignias", "label": "Insignias"},
+]) }}</div>
+
+{{ gestor("tipos-logro", "Tipos de logro y XP", "tipo de logro") }}
+{{ gestor("niveles", "Niveles (estrellas)", "nivel", oculto=True) }}
+{{ gestor("insignias", "Insignias y reglas", "insignia", oculto=True) }}
+
+{# Formularios de los modales (uno por recurso). #}
+<template data-modal="tipos-logro">
+  <form class="space-y-4">
+    {{ field("Nombre", "nombre", required=True) }}
+    {{ field("XP que otorga", "xp", type="number", min="1", required=True) }}
+    {{ modal_actions() }}
+  </form>
+</template>
+
+<template data-modal="niveles">
+  <form class="space-y-4">
+    {{ field("Número de estrellas", "nivel", type="number", min="1", max="5", required=True) }}
+    {{ field("XP mínimo para alcanzarlo", "xpMinimo", type="number", min="0", required=True) }}
+    {{ modal_actions() }}
+  </form>
+</template>
+
+<template data-modal="insignias">
+  <form class="space-y-4">
+    {{ field("Nombre", "nombre", required=True) }}
+    {{ field("Descripción", "descripcion", required=True) }}
+    {{ field("Aplica a", "ambito", type="select", options=[("usuario", "Estudiante"), ("semillero", "Semillero")], required=True) }}
+    {{ field("Tipo de logro requerido", "idTipoLogro", type="select", placeholder="Cualquier tipo", data_options="tipos-logro") }}
+    {{ field("Cantidad de logros aprobados", "cantidad", type="number", min="1", required=True) }}
+    {{ field("Icono", "icono", type="select", options=["medalla", "trofeo", "libro", "idea", "calendario", "equipo"], required=True) }}
+    {{ modal_actions() }}
+  </form>
+</template>
+{% endblock %}

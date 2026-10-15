@@ -1,3 +1,43 @@
 {% extends "public_base.html" %}
+{% from "partials/_ui.html" import link_button, ri %}
 {% set page = "landing" %}
+{% set categorias = [
+  {"tipo": "semilleros", "label": "Semilleros", "icono": "flask-line", "texto": "Grupos de investigación activos en todas las facultades."},
+  {"tipo": "proyectos", "label": "Proyectos", "icono": "folder-3-line", "texto": "Proyectos abiertos a la consulta de la comunidad."},
+  {"tipo": "eventos", "label": "Eventos", "icono": "calendar-event-line", "texto": "Encuentros, talleres y simposios próximos."},
+] %}
 {% block title %}Inicio{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-4xl px-4 pt-10 pb-10 text-center sm:px-6 sm:pt-14">
+  <p class="text-xl font-bold tracking-tight text-accent sm:text-3xl">Red de Investigación Universidad Libre</p>
+  <h1 class="mt-3 text-4xl font-semibold tracking-tight text-balance sm:text-6xl">La investigación que se ve, se comparte y se reconoce.</h1>
+  <p class="mx-auto mt-5 max-w-2xl text-base text-ink-soft sm:text-lg">
+    Conoce los semilleros, proyectos y eventos de la universidad. Si haces parte de la comunidad, inicia sesión
+    para publicar, registrar logros y construir tu hoja de vida investigativa.
+  </p>
+  <div class="mt-6 flex flex-wrap justify-center gap-3">
+    {{ link_button("Explorar semilleros", "/explorar/semilleros", size="lg") }}
+    {{ link_button("Solicitar acceso", "/registro", variant="secondary", size="lg") }}
+  </div>
+</section>
+
+{# Se muestra cuando llegan los totales y el contenido destacado (js/pages/landing.js). #}
+<div data-carga class="mx-auto max-w-6xl space-y-10 px-4 pb-14 sm:px-6">
+  <section aria-label="Categorías" class="grid gap-4 sm:grid-cols-3">
+    {% for categoria in categorias %}
+    <a href="/explorar/{{ categoria.tipo }}" class="card block p-6 transition-transform hover:-translate-y-0.5">
+      <span class="text-accent">{{ ri(categoria.icono, 28) }}</span>
+      <h2 class="mt-4 text-xl font-semibold tracking-tight">{{ categoria.label }}</h2>
+      <p class="mt-1 text-ink-soft">{{ categoria.texto }}</p>
+      <p class="mt-4 text-sm font-medium text-accent"><span data-bind="totales.{{ categoria.tipo }}"></span> disponibles</p>
+    </a>
+    {% endfor %}
+  </section>
+
+  <section aria-labelledby="destacados">
+    <h2 id="destacados" class="mb-4 text-2xl font-semibold tracking-tight">Contenido público destacado</h2>
+    <div class="grid gap-4 md:grid-cols-3" data-region="destacados"></div>
+  </section>
+</div>
+{% endblock %}

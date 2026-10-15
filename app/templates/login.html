@@ -1,3 +1,39 @@
 {% extends "auth_base.html" %}
+{% from "partials/_ui.html" import field, button %}
 {% set page = "login" %}
+{# Cuentas sembradas en js/mock/db.js: solo existen con el backend simulado (USE_MOCKS=true). #}
+{% set cuentas_demo = [
+  ("Administrador", "admin@unilibre.edu.co"),
+  ("Docente líder", "marcela.quintero@unilibre.edu.co"),
+  ("Estudiante", "camila.rojas@unilibre.edu.co"),
+  ("Cuenta pendiente", "juliana.prieto@unilibre.edu.co"),
+] %}
 {% block title %}Iniciar sesión{% endblock %}
+
+{% block content %}
+<section class="auth-panel">
+  <h1 class="text-3xl font-semibold tracking-tight">Iniciar sesión</h1>
+  <p class="mt-1 mb-5 text-ink-soft">Ingresa con tu correo institucional para continuar.</p>
+
+  <form class="space-y-4" data-form="login">
+    {{ field("Correo institucional", "correo", type="email", icon="mail-line", placeholder="nombre@unilibre.edu.co", autocomplete="username", required=True) }}
+    {{ field("Contraseña", "password", type="password", icon="lock-line", placeholder="Ingresa tu contraseña", autocomplete="current-password", required=True) }}
+    {{ button("Entrar", type="submit", size="lg", icon="arrow-right-line", classes="w-full") }}
+  </form>
+
+  <p class="mt-5 text-center text-[15px] text-ink-soft">
+    ¿Aún no tienes acceso? <a href="/registro" class="font-medium text-accent hover:underline">Solicitar registro</a>
+  </p>
+
+  {% if use_mocks %}
+  <div class="mt-5 rounded-2xl border border-dashed border-ink-soft/40 p-4">
+    <p class="mb-3 text-center text-sm text-ink-soft">Demostración: entra con un clic</p>
+    <div class="grid grid-cols-2 gap-2">
+      {% for rol, correo in cuentas_demo %}
+      {{ button(rol, variant="secondary", size="sm", data_demo=correo) }}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

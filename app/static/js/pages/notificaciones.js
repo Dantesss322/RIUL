@@ -1,27 +1,21 @@
-/** Notificaciones (RF-3.2): cada usuario ve las generadas por su rol y su actividad. */
-import { html, mount, button, card, cargar, emptyState, intentar, on, pageHeader } from '../core/ui.js';
+/**
+ * Notificaciones (RF-3.2): cada usuario ve las generadas por su rol y su actividad.
+ * El encabezado lo escribe templates/notificaciones.html.
+ */
+import { html, mount, card, cargar, emptyState, intentar, on } from '../core/ui.js';
 import { notificacionesApi } from '../core/api.js';
 import { formatRelative } from '../core/format.js';
 
 export default function iniciar({ root }) {
-  mount(
-    root,
-    html`${pageHeader({
-        title: 'Notificaciones',
-        description: 'Novedades de tus semilleros, validaciones y convocatorias.',
-        actions: button({ variant: 'secondary', icon: 'check-double-line', children: 'Marcar todas como leídas', 'data-action': 'todas' }),
-      })}
-      <div id="lista"></div>`,
-  );
+  const lista = root.querySelector('[data-region="lista"]');
 
-  const lista = root.querySelector('#lista');
   const recargar = () =>
     cargar(lista, () => notificacionesApi.listar(), (filas) =>
       mount(
         lista,
         filas.length === 0
           ? card({}, emptyState({ icon: 'notification-3-line', title: 'No tienes notificaciones', description: 'Te avisaremos cuando haya novedades.' }))
-          : html`<section class="rounded-card border border-line/70 bg-surface p-2 shadow-card"><ul>${filas.map(
+          : html`<section class="card p-2 sm:p-2"><ul>${filas.map(
               (n) => html`<li><button type="button" data-abrir="${n.id}" data-ruta="${n.ruta}" data-leida="${n.leida}" class="flex w-full items-start gap-3 rounded-2xl px-4 py-3.5 text-left transition-colors hover:bg-canvas">
                 <span aria-hidden="true" class="mt-2 size-2.5 shrink-0 rounded-full ${n.leida ? 'bg-transparent' : 'bg-accent'}"></span>
                 <span class="min-w-0">

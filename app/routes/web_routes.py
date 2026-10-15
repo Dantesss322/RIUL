@@ -3,7 +3,7 @@
 Cada pagina es una plantilla de `app/templates`. La informacion que muestran
 se carga desde JavaScript (app/static/js) llamando a la API.
 """
-from flask import Blueprint, render_template
+from flask import Blueprint, redirect, render_template, url_for
 
 web_bp = Blueprint("web", __name__)
 
@@ -11,7 +11,6 @@ web_bp = Blueprint("web", __name__)
 PAGINAS = [
     # Publicas
     ("/", "landing.html"),
-    ("/explorar/<tipo>", "explorar.html"),
     # Acceso
     ("/login", "login.html"),
     ("/registro", "registro.html"),
@@ -55,6 +54,17 @@ for direccion, plantilla in PAGINAS:
         endpoint=plantilla.removesuffix(".html"),
         view_func=_pagina(plantilla),
     )
+
+
+TIPOS_EXPLORAR = ("semilleros", "proyectos", "eventos")
+
+
+@web_bp.route("/explorar/<tipo>")
+def explorar(tipo):
+    """Exploracion publica: un tipo desconocido vuelve al listado de semilleros."""
+    if tipo not in TIPOS_EXPLORAR:
+        return redirect(url_for("web.explorar", tipo="semilleros"))
+    return render_template("explorar.html", tipo=tipo)
 
 
 @web_bp.app_errorhandler(404)

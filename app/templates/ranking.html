@@ -1,3 +1,29 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, tabs, card %}
 {% set page = "ranking" %}
 {% block title %}Ranking e insignias{% endblock %}
+
+{% block content %}
+{{ page_header("Ranking e insignias", "El reconocimiento a la actividad investigativa, actualizado al aprobar cada logro.") }}
+
+<div class="mb-4">{{ tabs([
+  {"id": "semilleros", "label": "Semilleros"},
+  {"id": "investigadores", "label": "Investigadores"},
+  {"id": "insignias", "label": "Insignias"},
+]) }}</div>
+
+{# Posiciones de semilleros o investigadores, segun la pestana. #}
+<div data-region="ranking"></div>
+
+{# Insignias del usuario y de su semillero. #}
+<div class="grid gap-6 lg:grid-cols-2" data-bloque="insignias" hidden>
+  {% call card("Tus insignias") %}
+    <ul class="space-y-3" data-region="insignias-usuario"></ul>
+  {% endcall %}
+  <div data-bloque="insignias-semillero">
+    {% call card("Insignias de tu semillero") %}
+      <ul class="space-y-3" data-region="insignias-semillero"></ul>
+    {% endcall %}
+  </div>
+</div>
+{% endblock %}

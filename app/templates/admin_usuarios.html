@@ -1,3 +1,24 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, card, field, button %}
 {% set page = "admin_usuarios" %}
 {% block title %}Usuarios{% endblock %}
+
+{% block content %}
+{{ page_header("Usuarios", "Aprueba nuevas cuentas y administra los roles de la plataforma.") }}
+
+<div class="mb-6">
+  {% call card("Solicitudes de cuenta pendientes") %}
+    <div data-region="pendientes"></div>
+  {% endcall %}
+</div>
+
+<form role="search" class="mb-4 flex flex-wrap items-end gap-3" data-form="filtros">
+  {{ field("Buscar usuarios", "q", type="search", placeholder="Nombre o correo", classes="grow") }}
+  {{ field("Rol", "rol", type="select", placeholder="Todos", options=[("administrador", "Administrador"), ("docente_lider", "Docente líder"), ("estudiante", "Estudiante investigador")]) }}
+  {{ button("Filtrar", type="submit", icon="search-line") }}
+</form>
+
+{% call card("Usuarios registrados") %}
+  <div data-region="registrados"></div>
+{% endcall %}
+{% endblock %}

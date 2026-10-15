@@ -1,3 +1,12 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, button %}
 {% set page = "notificaciones" %}
 {% block title %}Notificaciones{% endblock %}
+
+{% block content %}
+{% call page_header("Notificaciones", "Novedades de tus semilleros, validaciones y convocatorias.") %}
+  {{ button("Marcar todas como leídas", variant="secondary", icon="check-double-line", data_action="todas") }}
+{% endcall %}
+
+<div data-region="lista"></div>
+{% endblock %}

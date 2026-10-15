@@ -1,3 +1,41 @@
 {% extends "auth_base.html" %}
+{% from "partials/_ui.html" import field, button, link_button, ri %}
 {% set page = "registro" %}
 {% block title %}Solicitar registro{% endblock %}
+
+{% block content %}
+<section class="auth-panel auth-panel-wide" data-vista="formulario">
+  <h1 class="text-3xl font-semibold tracking-tight">Solicitar registro</h1>
+  <p class="mt-1 mb-4 text-ink-soft">Crea tu cuenta; un administrador la aprobará antes de que ingreses.</p>
+
+  <form class="grid gap-3 sm:grid-cols-2" data-form="registro" novalidate>
+    {{ field("Nombre completo", "nombre", icon="user-3-line", autocomplete="name", required=True) }}
+    {{ field("Programa académico", "idPrograma", type="select", icon="graduation-cap-line", required=True) }}
+    {{ field("Correo electrónico", "correo", type="email", icon="mail-line", placeholder="nombre@unilibre.edu.co", autocomplete="email", classes="sm:col-span-2", required=True) }}
+    <p data-pista-correo class="-mt-2 text-sm text-ink-soft sm:col-span-2" hidden></p>
+    {{ field("Contraseña", "password", type="password", icon="lock-line", minlength="8", autocomplete="new-password", placeholder="Mínimo 8 caracteres", required=True) }}
+    {{ field("Confirmar contraseña", "confirmar", type="password", icon="lock-line", minlength="8", autocomplete="new-password", required=True) }}
+    {# Aparece cuando el correo no es institucional. #}
+    <div data-bloque-justificacion class="sm:col-span-2" hidden>
+      {{ field("Justificación de la solicitud", "justificacion", type="textarea", rows=2, placeholder="Explica por qué necesitas acceso a la plataforma.") }}
+    </div>
+    {{ button("Enviar solicitud", type="submit", size="lg", icon="arrow-right-line", classes="w-full sm:col-span-2") }}
+  </form>
+
+  <p class="mt-5 text-center text-[15px] text-ink-soft">
+    ¿Ya tienes cuenta? <a href="/login" class="font-medium text-accent hover:underline">Inicia sesión</a>
+  </p>
+</section>
+
+<section class="auth-panel" data-vista="enviada" hidden>
+  <div class="text-center">
+    <span class="text-success">{{ ri("checkbox-circle-line", 48) }}</span>
+    <h1 class="mt-4 text-3xl font-semibold tracking-tight">Solicitud enviada</h1>
+    <p class="mt-2 text-ink-soft">
+      Estado de la solicitud: <strong class="text-ink">pendiente de revisión</strong>. Un administrador
+      validará tu información y podrás iniciar sesión cuando tu cuenta sea aprobada.
+    </p>
+    <div class="mt-6">{{ link_button("Ir a iniciar sesión", "/login", size="lg") }}</div>
+  </div>
+</section>
+{% endblock %}

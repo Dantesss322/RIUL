@@ -7,8 +7,12 @@
 
   <div class="min-w-0">
     {% include "partials/_topbar.html" %}
-    {# El contenido de cada pantalla lo dibuja js/pages/<pagina>.js #}
-    <main id="page" class="mx-auto max-w-6xl px-4 py-6 sm:px-6"></main>
+    {# El marco de cada pantalla lo escribe su plantilla; js/pages/<pagina>.js lo completa con datos.
+       Queda oculto hasta que main.js valida la sesion y aplica los roles. #}
+    <main id="page" hidden class="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+      {% block content %}{% endblock %}
+    </main>
   </div>
 </div>
+{% include "partials/_modal.html" %}
 {% endblock %}

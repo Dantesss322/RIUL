@@ -13,7 +13,9 @@
         <i class="ri-arrow-left-line" aria-hidden="true"></i> Volver al inicio
       </a>
     </header>
-    <main id="page" class="flex flex-1 items-center justify-center py-4"></main>
+    <main id="page" class="flex flex-1 items-center justify-center py-4">
+      {% block content %}{% endblock %}
+    </main>
   </div>
 </div>
 {% endblock %}

@@ -1,3 +1,23 @@
 {% extends "public_base.html" %}
+{% from "partials/_ui.html" import page_header, tab_links %}
 {% set page = "explorar" %}
-{% block title %}Explorar{% endblock %}
+{% set tipos = {
+  "semilleros": {"label": "Semilleros", "descripcion": "Grupos de investigación de la Universidad Libre."},
+  "proyectos": {"label": "Proyectos", "descripcion": "Proyectos de investigación abiertos a la consulta pública."},
+  "eventos": {"label": "Eventos", "descripcion": "Próximas actividades académicas e institucionales."},
+} %}
+{% block title %}{{ tipos[tipo].label }}{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+  {{ page_header(tipos[tipo].label, tipos[tipo].descripcion) }}
+  <div class="mb-6">
+    {{ tab_links([
+      {"id": "semilleros", "label": "Semilleros", "href": "/explorar/semilleros"},
+      {"id": "proyectos", "label": "Proyectos", "href": "/explorar/proyectos"},
+      {"id": "eventos", "label": "Eventos", "href": "/explorar/eventos"},
+    ], tipo) }}
+  </div>
+  <div data-region="listado"></div>
+</div>
+{% endblock %}

@@ -1,35 +1,47 @@
 /**
- * Gestor CRUD generico para los catalogos del panel de administracion.
- * Se configura declarando columnas y campos; la tabla, el modal de edicion, la confirmacion de
- * borrado y las alertas son compartidos (RF-7.1).
+ * Gestor CRUD generico para los catalogos del panel de administracion (RF-7.1).
  *
- * resource: recurso REST (facultades, programas...).   noun: nombre singular para los textos.
- * columns:  [{ header, cell: (fila) => Raw|texto }]
- * fields:   [{ name, label, type?, required?, options?, min?, max?, placeholder?,
- *              optionsFrom?: { resource, params?, label? } }]
+ * El marco vive en la plantilla (macro `gestor` de partials/_ui.html): un panel [data-gestor="recurso"]
+ * con el titulo, el boton "Nuevo" y la region de la tabla, mas un <template data-modal="recurso"> con
+ * el formulario. Aqui solo se declaran las columnas; la tabla, el modal de edicion, la confirmacion
+ * de borrado y las alertas son compartidos.
+ *
+ * Los <select> del formulario que se alimentan de otro recurso llevan data-options="recurso" o
+ * data-options="recurso?parametro=valor"; su etiqueta es el campo `nombre`.
  */
-import { html, mount, button, card, cargar, dataTable, emptyState, field, formModal, intentar, on } from '../core/ui.js';
+import { html, mount, cargar, dataTable, emptyState, button, intentar, on } from '../core/ui.js';
+import { formModal, iniciarTabs, llenarSelect, modalDe } from '../core/dom.js';
 import { crud } from '../core/api.js';
 import { notify } from '../core/notify.js';
 
 /** Los <input type="date"> solo aceptan "AAAA-MM-DD"; el backend entrega fechas ISO completas. */
-const valorDeEntrada = (campo, valor) => (campo.type === 'date' && valor ? String(valor).slice(0, 10) : (valor ?? ''));
+const valorDeEntrada = (control, valor) => (control.type === 'date' && valor ? String(valor).slice(0, 10) : (valor ?? ''));
 
-/** Opciones de los campos que se alimentan de otro recurso del backend. */
-async function resolverOpciones(fields) {
-  const resueltos = await Promise.all(
-    fields.map(async (campo) => {
-      if (!campo.optionsFrom) return campo;
-      const { resource, params, label = 'nombre' } = campo.optionsFrom;
-      const filas = (await intentar(() => crud(resource).listar(params))) ?? [];
-      return { ...campo, options: filas.map((fila) => ({ value: fila.id, label: fila[label] })) };
+/** Opciones de cada <select data-options> del formulario, pedidas al backend: { nombreDelCampo: [{value, label}] }. */
+async function resolverOpciones(plantillaForm) {
+  const selects = [...plantillaForm.content.querySelectorAll('select[data-options]')];
+  const entradas = await Promise.all(
+    selects.map(async (select) => {
+      const [resource, consulta = ''] = select.dataset.options.split('?');
+      const filas = (await intentar(() => crud(resource).listar(Object.fromEntries(new URLSearchParams(consulta))))) ?? [];
+      return [select.name, filas.map((fila) => ({ value: fila.id, label: fila.nombre }))];
     }),
   );
-  return resueltos;
+  return Object.fromEntries(entradas);
 }
 
-export function resourceManager({ root, resource, title, noun, columns, fields }) {
+/**
+ * @param {object} options
+ * @param {HTMLElement} options.root       Panel [data-gestor] del recurso.
+ * @param {string} options.resource        Recurso REST (facultades, programas...).
+ * @param {{header: string, cell: (fila) => *}[]} options.columns
+ * @returns {{recargar: () => void}}
+ */
+export function resourceManager({ root, resource, columns }) {
   const api = crud(resource);
+  const noun = root.dataset.sustantivo;
+  const tabla = root.querySelector('[data-region="tabla"]');
+  const plantillaForm = modalDe(resource);
   let filas = [];
 
   const acciones = {
@@ -41,15 +53,6 @@ export function resourceManager({ root, resource, title, noun, columns, fields }
         ${button({ variant: 'ghost', size: 'sm', icon: 'delete-bin-line', 'aria-label': `Eliminar ${noun}`, 'data-delete': fila.id })}
       </div>`,
   };
-
-  mount(
-    root,
-    card(
-      { title, action: button({ size: 'sm', icon: 'add-line', children: 'Nuevo', 'data-nuevo': true }) },
-      html`<div data-tabla></div>`,
-    ),
-  );
-  const tabla = root.querySelector('[data-tabla]');
 
   const recargar = () =>
     cargar(tabla, () => api.listar(), (datos) => {
@@ -64,23 +67,16 @@ export function resourceManager({ root, resource, title, noun, columns, fields }
 
   /** Abre el formulario de creacion (`registro` vacio) o de edicion. */
   async function abrirFormulario(registro = {}) {
-    const campos = await resolverOpciones(fields);
-    formModal({
-      title: registro.id ? `Editar ${noun}` : `Agregar ${noun}`,
-      body: html`${campos.map((campo) =>
-        field({
-          label: campo.label,
-          name: campo.name,
-          type: campo.type ?? 'text',
-          options: campo.options,
-          placeholder: campo.placeholder,
-          value: valorDeEntrada(campo, registro[campo.name]),
-          required: campo.required,
-          min: campo.min,
-          max: campo.max,
-        }),
-      )}`,
-      onSubmit: async (values) => {
+    const opciones = await resolverOpciones(plantillaForm);
+    formModal(plantillaForm, {
+      titulo: registro.id ? `Editar ${noun}` : `Agregar ${noun}`,
+      alAbrir: (form) => {
+        Object.entries(opciones).forEach(([campo, items]) => llenarSelect(form.elements[campo], items));
+        [...form.elements].forEach((control) => {
+          if (control.name && registro[control.name] != null) control.value = valorDeEntrada(control, registro[control.name]);
+        });
+      },
+      alEnviar: async (values) => {
         await (registro.id ? api.actualizar(registro.id, values) : api.crear(values));
         recargar();
         return true;
@@ -103,4 +99,21 @@ export function resourceManager({ root, resource, title, noun, columns, fields }
   });
 
   recargar();
+  return { recargar };
+}
+
+/**
+ * Pantalla con pestanas donde cada pestana es un gestor: crea el gestor al abrir su panel por primera
+ * vez y lo recarga cuando se vuelve a el.
+ * @param {HTMLElement} root
+ * @param {Record<string, {header: string, cell: (fila) => *}[]>} columnasPorRecurso
+ */
+export function gestoresConPestanas(root, columnasPorRecurso) {
+  const gestores = {};
+  iniciarTabs(root, {
+    alCambiar: (id) => {
+      if (gestores[id]) gestores[id].recargar();
+      else gestores[id] = resourceManager({ root: root.querySelector(`[data-gestor="${id}"]`), resource: id, columns: columnasPorRecurso[id] });
+    },
+  });
 }

@@ -1,11 +1,11 @@
 /**
  * Detalle de un semillero (RF-2.1, RF-2.2, RF-2.6, RF-2.7): integrantes, proyectos, insignias y,
  * para su lider, las solicitudes de vinculacion. El id llega por la URL (/app/semilleros/<id>).
+ * El marco (encabezado, pestanas, paneles y formularios de los modales) lo escribe
+ * templates/semillero_detalle.html; aqui se completan los datos.
  */
-import {
-  html, mount, avatar, badge, button, card, cargar, estadoBadge, field, formModal, insigniaCard,
-  intentar, levelStars, on, pageHeader, tabs, xpProgress,
-} from '../core/ui.js';
+import { html, mount, avatar, badge, button, cargarMarco, estadoBadge, insigniaCard, intentar, levelStars, on, xpProgress } from '../core/ui.js';
+import { enlazar, formModal, iniciarTabs, llenarSelect, modalDe } from '../core/dom.js';
 import { proyectosApi, semillerosApi, usuariosApi, vinculacionesApi } from '../core/api.js';
 import { ROLES_INTEGRANTE, toOptions } from '../core/dominio.js';
 import { formatDate } from '../core/format.js';
@@ -16,7 +16,9 @@ const ROLES = toOptions(ROLES_INTEGRANTE);
 export default function iniciar({ root, params }) {
   const id = params.id;
   let semillero;
-  let pestana = 'integrantes';
+
+  const region = (nombre) => root.querySelector(`[data-region="${nombre}"]`);
+  const tabs = iniciarTabs(root);
 
   const integrantes = (puedeGestionar) =>
     semillero.integrantes.length === 0
@@ -66,42 +68,33 @@ export default function iniciar({ root, params }) {
 
   const dibujar = () => {
     const puedeGestionar = semillero.esLider;
-    const pestanas = [
-      { id: 'integrantes', label: 'Integrantes' },
-      { id: 'proyectos', label: 'Proyectos' },
-      { id: 'insignias', label: 'Insignias' },
-      ...(puedeGestionar ? [{ id: 'solicitudes', label: 'Solicitudes', count: semillero.solicitudes.length }] : []),
-    ];
-    const contenido = { integrantes: () => integrantes(puedeGestionar), solicitudes, insignias, proyectos }[pestana]();
 
-    mount(
-      root,
-      html`${pageHeader({
-          title: semillero.nombre,
-          description: `${semillero.facultad} · Líder: ${semillero.docenteLider}`,
-          actions: puedeGestionar
-            ? html`${button({ variant: 'secondary', icon: 'user-add-line', children: 'Agregar integrante', 'data-action': 'agregar' })}
-                ${button({ icon: 'add-line', children: 'Registrar proyecto', 'data-action': 'proyecto' })}`
-            : '',
-        })}
-        ${card({ className: 'mb-6' }, html`<p class="mb-4 text-ink-soft">${semillero.descripcion}</p>
-          <div class="grid gap-4 sm:grid-cols-[auto_1fr] sm:items-center">${levelStars(semillero.progreso.nivel)}${xpProgress(semillero.progreso)}</div>`)}
-        <div class="mb-4">${tabs(pestanas, pestana)}</div>
-        ${card({}, contenido)}`,
-    );
+    enlazar(root, {
+      nombre: semillero.nombre,
+      detalle: `${semillero.facultad} · Líder: ${semillero.docenteLider}`,
+      descripcion: semillero.descripcion,
+    });
+    mount(region('progreso'), html`${levelStars(semillero.progreso.nivel)}${xpProgress(semillero.progreso)}`);
+
+    // Acciones y pestana de solicitudes: solo para el lider de este semillero.
+    root.querySelectorAll('[data-lider]').forEach((elemento) => {
+      elemento.hidden = !puedeGestionar;
+    });
+    root.querySelector('[data-tab="solicitudes"]').hidden = !puedeGestionar;
+    tabs.contar('solicitudes', puedeGestionar ? semillero.solicitudes.length : 0);
+    if (!puedeGestionar && tabs.activa() === 'solicitudes') tabs.seleccionar('integrantes');
+
+    mount(region('integrantes'), integrantes(puedeGestionar));
+    mount(region('proyectos'), proyectos());
+    mount(region('insignias'), insignias());
+    mount(region('solicitudes'), solicitudes());
   };
 
   const recargar = () =>
-    cargar(root, () => semillerosApi.obtener(id), (datos) => {
+    cargarMarco(root.querySelector('[data-carga]'), () => semillerosApi.obtener(id), (datos) => {
       semillero = datos;
-      if (pestana === 'solicitudes' && !semillero.esLider) pestana = 'integrantes';
       dibujar();
     });
-
-  on(root, 'click', '[data-tab]', (tab) => {
-    pestana = tab.dataset.tab;
-    dibujar();
-  });
 
   on(root, 'click', '[data-resolver]', (boton) =>
     intentar(async () => {
@@ -127,12 +120,9 @@ export default function iniciar({ root, params }) {
 
   on(root, 'click', '[data-action="agregar"]', async () => {
     const estudiantes = (await intentar(() => usuariosApi.estudiantes())) ?? [];
-    formModal({
-      title: 'Agregar integrante',
-      submitLabel: 'Agregar',
-      body: html`${field({ label: 'Estudiante', name: 'idUsuario', type: 'select', options: estudiantes.map((e) => ({ value: e.id, label: e.nombre })), required: true })}
-        ${field({ label: 'Rol en el semillero', name: 'rol', type: 'select', options: ROLES, required: true })}`,
-      onSubmit: async (values) => {
+    formModal(modalDe('agregar-integrante'), {
+      alAbrir: (form) => llenarSelect(form.elements.idUsuario, estudiantes.map((e) => ({ value: e.id, label: e.nombre }))),
+      alEnviar: async (values) => {
         await semillerosApi.agregarIntegrante(id, values);
         recargar();
         return true;
@@ -141,13 +131,8 @@ export default function iniciar({ root, params }) {
   });
 
   on(root, 'click', '[data-action="proyecto"]', () =>
-    formModal({
-      title: 'Registrar proyecto',
-      submitLabel: 'Registrar',
-      body: html`${field({ label: 'Nombre del proyecto', name: 'nombre', required: true })}
-        ${field({ label: 'Descripción', name: 'descripcion', type: 'textarea', required: true })}
-        ${field({ label: 'Mostrar en la página pública', name: 'esPublico', type: 'checkbox', hint: 'Los visitantes podrán ver el nombre y la descripción del proyecto.' })}`,
-      onSubmit: async (values) => {
+    formModal(modalDe('registrar-proyecto'), {
+      alEnviar: async (values) => {
         await proyectosApi.crear({ ...values, idSemillero: Number(id), esPublico: values.esPublico === 'on' });
         recargar();
         return true;

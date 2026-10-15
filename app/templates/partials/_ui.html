@@ -1,0 +1,155 @@
+{#
+  Macros de interfaz. Usan las clases de componente de static/css/app.css (btn, card, field, tabs...).
+  Los atributos extra se pasan como argumentos con guion bajo: data_action="guardar" -> data-action="guardar".
+#}
+
+{# Atributos extra de un elemento (omite None y False; True escribe solo el nombre). #}
+{% macro _attrs(extra) -%}
+{% for key, value in extra.items() if value is not none and value is not sameas false %}{{ " " }}{{ key|replace('_', '-') }}{% if value is not sameas true %}="{{ value }}"{% endif %}{% endfor %}
+{%- endmacro %}
+
+{# Icono de Remix Icon. #}
+{% macro ri(name, size=18, classes="") -%}
+<i class="ri-{{ name }}{{ ' ' ~ classes if classes }}" style="font-size:{{ size }}px;line-height:1" aria-hidden="true"></i>
+{%- endmacro %}
+
+{# <button>. variant: primary | secondary | ghost. size: "" | sm | lg. #}
+{% macro button(label="", variant="primary", size="", icon="", type="button", classes="") -%}
+<button type="{{ type }}" class="btn btn-{{ variant }}{{ ' btn-' ~ size if size }}{{ ' ' ~ classes if classes }}"{{ _attrs(kwargs) }}>
+  {%- if icon %}{{ ri(icon) }}{% endif %}{{ label }}</button>
+{%- endmacro %}
+
+{# <a> con aspecto de boton. #}
+{% macro link_button(label, href, variant="primary", size="", icon="", classes="") -%}
+<a href="{{ href }}" class="btn btn-{{ variant }}{{ ' btn-' ~ size if size }}{{ ' ' ~ classes if classes }}"{{ _attrs(kwargs) }}>
+  {%- if icon %}{{ ri(icon) }}{% endif %}{{ label }}</a>
+{%- endmacro %}
+
+{# Encabezado de pantalla. Las acciones (botones) van en el bloque {% call %}. *_bind: texto llenado por JS. #}
+{% macro page_header(title, description="", title_bind="", description_bind="") -%}
+<header class="page-header">
+  <div>
+    <h1 class="page-title"{% if title_bind %} data-bind="{{ title_bind }}"{% endif %}>{{ title }}</h1>
+    {% if description or description_bind -%}
+    <p class="page-description"{% if description_bind %} data-bind="{{ description_bind }}"{% endif %}>{{ description }}</p>
+    {%- endif %}
+  </div>
+  {% if caller -%}
+  <div class="page-actions">{{ caller() }}</div>
+  {%- endif %}
+</header>
+{%- endmacro %}
+
+{# Tarjeta con titulo opcional; el contenido va en el bloque {% call %}. #}
+{% macro card(title="", title_bind="", classes="") -%}
+<section class="card{{ ' ' ~ classes if classes }}">
+  {% if title or title_bind -%}
+  <header class="card-header"><h2 class="card-title"{% if title_bind %} data-bind="{{ title_bind }}"{% endif %}>{{ title }}</h2></header>
+  {%- endif %}
+  {{ caller() }}
+</section>
+{%- endmacro %}
+
+{# Indicador numerico: `bind` es la ruta del dato que JS escribe en el valor. #}
+{% macro stat(label, bind, hint_bind="", hint="") -%}
+<div class="stat">
+  <div class="stat-label"><span>{{ label }}</span></div>
+  <p class="stat-value" data-bind="{{ bind }}"></p>
+  {% if hint_bind or hint -%}
+  <p class="stat-hint"{% if hint_bind %} data-bind="{{ hint_bind }}"{% endif %}>{{ hint }}</p>
+  {%- endif %}
+</div>
+{%- endmacro %}
+
+{# Pestañas. items: [{id, label, roles?, hidden?}]. JS (iniciarTabs) marca la activa y muestra su panel. #}
+{% macro tabs(items, label="") -%}
+<div class="tabs" role="tablist"{% if label %} aria-label="{{ label }}"{% endif %}>
+  {% for tab in items -%}
+  <button type="button" role="tab" data-tab="{{ tab.id }}" aria-selected="false" class="tab"{% if tab.roles %} data-roles="{{ tab.roles }}"{% endif %}{% if tab.hidden %} hidden{% endif %}>
+    {{- tab.label }}<span class="tab-count" data-count hidden></span></button>
+  {%- endfor %}
+</div>
+{%- endmacro %}
+
+{# Pestañas que son enlaces a otras direcciones (la activa la decide el servidor). #}
+{% macro tab_links(items, current) -%}
+<nav class="tabs" aria-label="Categorías">
+  {% for tab in items -%}
+  <a href="{{ tab.href }}" class="tab"{% if tab.id == current %} aria-current="page"{% endif %}>{{ tab.label }}</a>
+  {%- endfor %}
+</nav>
+{%- endmacro %}
+
+{# Marco de un gestor CRUD (js/components/resource_manager.js): titulo, boton "Nuevo" y tabla.
+   `recurso` es el recurso REST y el id del panel; `sustantivo` arma los textos ("Agregar facultad").
+   Su formulario es un <template data-modal="recurso"> de la misma pagina. #}
+{% macro gestor(recurso, titulo, sustantivo, oculto=False) -%}
+<section class="card" data-panel="{{ recurso }}" data-gestor="{{ recurso }}" data-sustantivo="{{ sustantivo }}"{{ ' hidden' if oculto }}>
+  <header class="card-header">
+    <h2 class="card-title">{{ titulo }}</h2>
+    {{ button("Nuevo", size="sm", icon="add-line", data_nuevo=True) }}
+  </header>
+  <div data-region="tabla"></div>
+</section>
+{%- endmacro %}
+
+{# Botones del pie de un formulario en modal. #}
+{% macro modal_actions(submit="Guardar") -%}
+<div class="flex justify-end gap-3 pt-2">
+  {{ button("Cancelar", variant="secondary", data_close=True) }}
+  {{ button(submit, type="submit") }}
+</div>
+{%- endmacro %}
+
+{#
+  Campo de formulario con su etiqueta (la etiqueta envuelve al control, sin ids).
+  type: text | email | password | tel | date | number | search | select | textarea | file | checkbox
+  options: lista de textos o de pares (valor, texto). icon: nombre de Remix Icon (campos de una linea).
+  sr_only: oculta la etiqueta visualmente (buscadores). Otros atributos: min="1", autocomplete="name"...
+#}
+{% macro field(label, name, type="text", value="", placeholder="", hint="", icon="", options=[], classes="", rows=4, required=False, sr_only=False) -%}
+{% if type == "checkbox" -%}
+<label class="field-check{{ ' ' ~ classes if classes }}">
+  <input type="checkbox" name="{{ name }}"{{ _attrs(kwargs) }}>
+  <span>{{ label }}{% if hint %}<span class="field-hint block">{{ hint }}</span>{% endif %}</span>
+</label>
+{%- else -%}
+<label class="field{{ ' ' ~ classes if classes }}">
+  <span class="field-label{{ ' sr-only' if sr_only }}">{{ label }}</span>
+  {%- if type == "select" %}
+  {% if icon %}<span class="field-icon">{{ ri(icon) }}{% endif -%}
+  <select name="{{ name }}" class="field-control"{{ ' required' if required }}{{ _attrs(kwargs) }}>
+    <option value="">{{ placeholder or "Selecciona una opción" }}</option>
+    {%- for option in options %}
+    {%- if option is string %}
+    <option value="{{ option }}"{{ ' selected' if option == value }}>{{ option }}</option>
+    {%- else %}
+    <option value="{{ option[0] }}"{{ ' selected' if option[0] == value }}>{{ option[1] }}</option>
+    {%- endif %}
+    {%- endfor %}
+  </select>
+  {%- if icon %}</span>{% endif %}
+  {%- elif type == "textarea" %}
+  <textarea name="{{ name }}" rows="{{ rows }}" class="field-control" placeholder="{{ placeholder }}"{{ ' required' if required }}{{ _attrs(kwargs) }}>{{ value }}</textarea>
+  {%- elif type == "file" %}
+  <span class="field-file">
+    {{ ri("upload-cloud-2-line", 22) }}
+    <strong data-file-name>Subir archivo</strong>
+    <span data-file-help>PDF, imagen o documento de hasta 10 MB</span>
+    <input type="file" name="{{ name }}" class="sr-only"{{ ' required' if required }}{{ _attrs(kwargs) }}>
+  </span>
+  {%- elif type == "password" %}
+  <span class="field-icon">
+    {%- if icon %}{{ ri(icon) }}{% endif %}
+    <input type="password" name="{{ name }}" class="field-control pr-11" placeholder="{{ placeholder }}"{{ ' required' if required }}{{ _attrs(kwargs) }}>
+    <button type="button" data-toggle-password aria-label="Mostrar contraseña" class="field-toggle">{{ ri("eye-line") }}</button>
+  </span>
+  {%- else %}
+  {% if icon %}<span class="field-icon">{{ ri(icon) }}{% endif -%}
+  <input type="{{ type }}" name="{{ name }}" value="{{ value }}" class="field-control" placeholder="{{ placeholder }}"{{ ' required' if required }}{{ _attrs(kwargs) }}>
+  {%- if icon %}</span>{% endif %}
+  {%- endif %}
+  {% if hint %}<span class="field-hint">{{ hint }}</span>{% endif %}
+</label>
+{%- endif %}
+{%- endmacro %}

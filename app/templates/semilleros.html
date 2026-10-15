@@ -1,3 +1,29 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, field, button %}
 {% set page = "semilleros" %}
 {% block title %}Semilleros{% endblock %}
+
+{% block content %}
+{{ page_header("Semilleros", "Tus semilleros y los grupos de investigación de la universidad.") }}
+
+{# Semilleros propios: solo existe para docentes y estudiantes, y aparece si tienen alguno. #}
+<section aria-labelledby="mis-semilleros" class="mb-8" data-bloque="propios" data-roles="docente_lider estudiante" hidden>
+  <h2 id="mis-semilleros" class="mb-3 text-lg font-semibold tracking-tight" data-bind="tituloPropios">Mi semillero</h2>
+  <div class="space-y-3" data-region="propios"></div>
+</section>
+
+<section aria-labelledby="explorar">
+  <h2 id="explorar" class="mb-3 text-lg font-semibold tracking-tight">Explorar semilleros</h2>
+  <form role="search" class="mb-4 flex gap-3" data-form="busqueda">
+    {{ field("Buscar semilleros", "q", type="search", placeholder="Nombre del semillero o facultad", classes="grow", sr_only=True) }}
+    {{ button("Buscar", type="submit", icon="search-line", classes="self-end") }}
+  </form>
+  <div data-region="explorar"></div>
+</section>
+
+{# Solicitudes de vinculacion del estudiante: se muestra si tiene alguna. #}
+<section class="card mt-6" data-bloque="solicitudes" data-roles="estudiante" hidden>
+  <header class="card-header"><h2 class="card-title">Mis solicitudes</h2></header>
+  <ul class="divide-y divide-line/60" data-region="solicitudes"></ul>
+</section>
+{% endblock %}

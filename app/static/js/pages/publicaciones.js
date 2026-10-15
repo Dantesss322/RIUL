@@ -1,34 +1,28 @@
 /**
  * Muro de publicaciones (RF-3): reacciones, comentarios, compartidos y estadisticas de impacto.
  * Las publicaciones de estudiantes aparecen como "Pendiente" para su autor hasta que el lider las apruebe.
+ * El encabezado, el filtro y el formulario de comentario los escribe templates/publicaciones.html.
  */
-import {
-  html, mount, avatar, badge, button, card, cargar, emptyState, estadoBadge, evidenceChip, field,
-  icon, intentar, linkButton, on, pageHeader,
-} from '../core/ui.js';
+import { html, raw, mount, avatar, badge, button, card, cargar, emptyState, estadoBadge, evidenceChip, icon, intentar, on } from '../core/ui.js';
+import { plantilla } from '../core/dom.js';
 import { publicacionesApi } from '../core/api.js';
-import { CATEGORIAS_PUBLICACION, toOptions } from '../core/dominio.js';
 import { formatRelative, plural } from '../core/format.js';
 import { notify } from '../core/notify.js';
 
-const CATEGORIAS = toOptions(CATEGORIAS_PUBLICACION);
-
-export default function iniciar({ root, user }) {
+export default function iniciar({ root }) {
   let categoria = '';
   let publicaciones = [];
   const comentariosAbiertos = new Map(); // id de publicacion -> comentarios cargados
+  const feed = root.querySelector('[data-region="feed"]');
 
   const comentarios = (id) =>
-    html`<div class="mt-4 space-y-3 border-t border-line/70 pt-4">
+    html`<div class="mt-4 space-y-3 border-t border-line/70 pt-4" data-comentarios="${id}">
       <ul class="space-y-3">${comentariosAbiertos.get(id).map(
         (c) => html`<li class="flex gap-3">${avatar(c.autor, 'sm')}
           <div class="rounded-2xl bg-canvas px-4 py-2 text-[15px]"><p class="text-sm font-medium">${c.autor}</p><p>${c.contenido}</p></div>
         </li>`,
       )}</ul>
-      <form class="flex items-end gap-2" data-form="comentario" data-id="${id}">
-        ${field({ label: 'Escribe un comentario', name: 'contenido', placeholder: 'Escribe un comentario', className: 'grow [&>label]:sr-only', required: true })}
-        ${button({ type: 'submit', icon: 'send-plane-line', 'aria-label': 'Enviar comentario' })}
-      </form>
+      ${raw(plantilla('comentario'))}
     </div>`;
 
   const tarjeta = (p) =>
@@ -42,7 +36,7 @@ export default function iniciar({ root, user }) {
       ${p.evidencia ? html`<div class="mt-3">${evidenceChip(p.evidencia)}</div>` : ''}
       ${p.estado === 'publicada'
         ? html`<footer class="mt-4 flex flex-wrap items-center gap-1 border-t border-line/70 pt-3">
-              ${button({ variant: 'ghost', size: 'sm', icon: p.reaccionado ? 'heart-fill' : 'heart-line', children: p.reacciones, 'aria-pressed': p.reaccionado, 'data-action': 'reaccion', 'data-id': p.id })}
+              ${button({ variant: 'ghost', size: 'sm', icon: p.reaccionado ? 'heart-fill' : 'heart-line', children: p.reacciones, 'aria-pressed': String(p.reaccionado), 'data-action': 'reaccion', 'data-id': p.id })}
               ${button({ variant: 'ghost', size: 'sm', icon: 'chat-1-line', children: p.comentarios, 'data-action': 'comentarios', 'data-id': p.id })}
               ${button({ variant: 'ghost', size: 'sm', icon: 'share-forward-line', children: p.compartidos, 'data-action': 'compartir', 'data-id': p.id })}
               <span class="ml-auto flex items-center gap-1.5 text-sm text-ink-soft">${icon('pulse-line', { size: 16 })} ${plural(p.interacciones, 'interacción', 'interacciones')}</span>
@@ -50,20 +44,6 @@ export default function iniciar({ root, user }) {
             ${comentariosAbiertos.has(p.id) ? comentarios(p.id) : ''}`
         : ''}`);
 
-  mount(
-    root,
-    html`${pageHeader({
-        title: 'Publicaciones',
-        description: 'Lo que está compartiendo la comunidad investigativa.',
-        actions: user.rol !== 'administrador'
-          ? linkButton({ href: '/app/publicaciones/nueva', icon: 'add-line', children: 'Publicar' })
-          : '',
-      })}
-      <div class="mb-6 max-w-xs">${field({ label: 'Categoría', name: 'categoria', type: 'select', placeholder: 'Todas las categorías', options: CATEGORIAS })}</div>
-      <div id="feed"></div>`,
-  );
-
-  const feed = root.querySelector('#feed');
   const dibujarFeed = () =>
     mount(
       feed,
@@ -118,7 +98,7 @@ export default function iniciar({ root, user }) {
     const formulario = event.target.closest('[data-form="comentario"]');
     if (!formulario) return;
     event.preventDefault();
-    const id = Number(formulario.dataset.id);
+    const id = Number(formulario.closest('[data-comentarios]').dataset.comentarios);
     intentar(async () => {
       await publicacionesApi.comentar(id, new FormData(formulario).get('contenido'));
       comentariosAbiertos.set(id, await publicacionesApi.comentarios(id));

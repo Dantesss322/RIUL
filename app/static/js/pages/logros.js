@@ -1,27 +1,14 @@
-/** Mis logros (RF-4.1 a RF-4.6): seguimiento de los logros propios en el flujo de validacion. */
-import { html, mount, card, cargar, emptyState, estadoBadge, evidenceChip, icon, linkButton, pageHeader } from '../core/ui.js';
+/**
+ * Mis logros (RF-4.1 a RF-4.6): seguimiento de los logros propios en el flujo de validacion.
+ * El encabezado y el recorrido del logro los escribe templates/logros.html.
+ */
+import { html, mount, card, cargar, emptyState, estadoBadge, evidenceChip } from '../core/ui.js';
 import { logrosApi } from '../core/api.js';
 import { formatDate } from '../core/format.js';
 
-const PIPELINE = ['Registrado', 'En validación', 'Aprobado', 'XP', 'Insignia', 'Nivel'];
-
 export default function iniciar({ root }) {
-  mount(
-    root,
-    html`${pageHeader({
-        title: 'Mis logros',
-        description: 'Registra tu actividad investigativa y sigue su validación.',
-        actions: linkButton({ href: '/app/logros/nuevo', icon: 'add-line', children: 'Registrar logro' }),
-      })}
-      <ol aria-label="Flujo de un logro" class="mb-6 flex flex-wrap items-center gap-1 text-sm text-ink-soft">${PIPELINE.map(
-        (paso, i) => html`<li class="flex items-center gap-1"><span class="rounded-full bg-black/5 px-3 py-1">${paso}</span>${
-          i < PIPELINE.length - 1 ? icon('arrow-right-s-line', { size: 16 }) : ''
-        }</li>`,
-      )}</ol>
-      <div id="lista"></div>`,
-  );
+  const lista = root.querySelector('[data-region="lista"]');
 
-  const lista = root.querySelector('#lista');
   cargar(lista, () => logrosApi.listar({ mios: true }), (filas) =>
     mount(
       lista,

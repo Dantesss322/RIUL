@@ -1,5 +1,9 @@
-/** Eventos y convocatorias (RF-2.8, RF-5.2, RF-5.3): registrar participacion y postularse. */
-import { html, mount, badge, button, card, cargar, emptyState, estadoBadge, icon, intentar, on, pageHeader, tabs, withLoading } from '../core/ui.js';
+/**
+ * Eventos y convocatorias (RF-2.8, RF-5.2, RF-5.3): registrar participacion y postularse.
+ * El encabezado, las pestanas y los paneles los escribe templates/eventos.html.
+ */
+import { html, mount, badge, button, card, cargar, emptyState, estadoBadge, icon, intentar, on, withLoading } from '../core/ui.js';
+import { iniciarTabs } from '../core/dom.js';
 import { convocatoriasApi, eventosApi } from '../core/api.js';
 import { formatDate, plural } from '../core/format.js';
 
@@ -31,46 +35,33 @@ const tarjetaConvocatoria = (c, puedePostularse) =>
         : ''}</div>`);
 
 export default function iniciar({ root, user }) {
-  let pestana = 'eventos';
+  const region = (nombre) => root.querySelector(`[data-region="${nombre}"]`);
 
-  const dibujar = () => {
-    mount(
-      root,
-      html`${pageHeader({ title: 'Eventos y convocatorias', description: 'Participa en la vida académica y postúlate a las oportunidades abiertas.' })}
-        <div class="mb-6">${tabs([{ id: 'eventos', label: 'Eventos' }, { id: 'convocatorias', label: 'Convocatorias' }], pestana)}</div>
-        <div id="contenido"></div>`,
-    );
-    const contenido = root.querySelector('#contenido');
-
-    if (pestana === 'eventos') {
-      cargar(contenido, () => eventosApi.listar(), (filas) =>
-        mount(contenido, filas.length === 0
+  const cargarPanel = (id) => {
+    if (id === 'eventos') {
+      cargar(region('eventos'), () => eventosApi.listar(), (filas) =>
+        mount(region('eventos'), filas.length === 0
           ? card({}, emptyState({ icon: 'calendar-event-line', title: 'No hay eventos programados' }))
           : html`<div class="grid gap-4 md:grid-cols-2">${filas.map(tarjetaEvento)}</div>`));
     } else {
-      cargar(contenido, () => convocatoriasApi.listar(), (filas) =>
-        mount(contenido, filas.length === 0
+      cargar(region('convocatorias'), () => convocatoriasApi.listar(), (filas) =>
+        mount(region('convocatorias'), filas.length === 0
           ? card({}, emptyState({ icon: 'calendar-event-line', title: 'No hay convocatorias publicadas' }))
           : html`<div class="grid gap-4 md:grid-cols-2">${filas.map((c) => tarjetaConvocatoria(c, user.rol === 'estudiante'))}</div>`));
     }
   };
 
-  on(root, 'click', '[data-tab]', (tab) => {
-    pestana = tab.dataset.tab;
-    dibujar();
-  });
+  const tabs = iniciarTabs(root, { alCambiar: cargarPanel });
 
   on(root, 'click', '[data-participar]', (b) =>
     withLoading(b, () => intentar(async () => {
       await eventosApi.participar(b.dataset.participar);
-      dibujar();
+      cargarPanel(tabs.activa());
     })));
 
   on(root, 'click', '[data-postular]', (b) =>
     withLoading(b, () => intentar(async () => {
       await convocatoriasApi.postularse(b.dataset.postular);
-      dibujar();
+      cargarPanel(tabs.activa());
     })));
-
-  dibujar();
 }

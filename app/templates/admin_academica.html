@@ -1,3 +1,29 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, tabs, gestor, field, modal_actions %}
 {% set page = "admin_academica" %}
 {% block title %}Facultades y programas{% endblock %}
+
+{% block content %}
+{{ page_header("Facultades y programas", "Estructura académica de la universidad.") }}
+
+<div class="mb-4">{{ tabs([{"id": "facultades", "label": "Facultades"}, {"id": "programas", "label": "Programas"}]) }}</div>
+
+{{ gestor("facultades", "Facultades", "facultad") }}
+{{ gestor("programas", "Programas académicos", "programa", oculto=True) }}
+
+{# Formularios de los modales (uno por recurso). #}
+<template data-modal="facultades">
+  <form class="space-y-4">
+    {{ field("Nombre de la facultad", "nombre", required=True) }}
+    {{ modal_actions() }}
+  </form>
+</template>
+
+<template data-modal="programas">
+  <form class="space-y-4">
+    {{ field("Nombre del programa", "nombre", required=True) }}
+    {{ field("Facultad", "idFacultad", type="select", required=True, data_options="facultades") }}
+    {{ modal_actions() }}
+  </form>
+</template>
+{% endblock %}

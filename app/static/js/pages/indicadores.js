@@ -2,8 +2,11 @@
  * Dashboard institucional (RF-6.2, RF-6.4): indicadores pensados para tomar decisiones.
  * Cada bloque responde una pregunta de gestion: quien produce, donde falta participacion,
  * que esta estancado y que tan agil es la validacion. Exporta a Excel (CSV) y a PDF (imprimir).
+ * El marco (encabezado, totales y tarjetas con su titulo) lo escribe templates/indicadores.html;
+ * aqui se escriben las graficas de cada tarjeta.
  */
-import { html, mount, barList, button, card, cargar, on, pageHeader, stat } from '../core/ui.js';
+import { html, mount, barList, cargarMarco, on } from '../core/ui.js';
+import { enlazar } from '../core/dom.js';
 import { analiticaApi } from '../core/api.js';
 import { descargarCsv } from '../core/exportCsv.js';
 
@@ -39,49 +42,26 @@ const alertas = (items, vacio, detalle) =>
         (i) => html`<li class="flex items-center justify-between gap-3 py-2.5"><span>${i.nombre}</span><span class="shrink-0 text-sm text-warning">${detalle(i)}</span></li>`,
       )}</ul>`;
 
-const vista = (d) =>
-  html`<div class="space-y-6">
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">${Object.entries(d.resumen).map(([clave, valor]) =>
-      stat({ label: ETIQUETAS_RESUMEN[clave], value: valor }),
-    )}</div>
-    <div class="grid gap-6 lg:grid-cols-2">
-      ${card({ title: 'Productividad por facultad' }, barList(d.productividadPorFacultad.map((f) => ({ label: f.facultad, value: f.logros, hint: `${f.xp} XP acumulados` }))))}
-      ${card({ title: 'Producción por tipo de logro' }, barList(d.productosPorTipo.map((p) => ({ label: p.tipo, value: p.total }))))}
-      ${card({ title: 'Vinculación estudiantil por facultad' }, barList(d.vinculacionPorFacultad.map((v) => ({ label: v.facultad, value: v.tasa, hint: `${v.vinculados} de ${v.estudiantes} estudiantes en semilleros` })), '%'))}
-      ${card({ title: 'Eficiencia de validación' }, html`<div class="grid grid-cols-3 gap-3 text-center">
-        <div><p class="text-3xl font-semibold tabular-nums">${d.validacion.pendientes}</p><p class="text-sm text-ink-soft">Pendientes</p></div>
-        <div><p class="text-3xl font-semibold tabular-nums">${d.validacion.antiguedadPromedioDias}</p><p class="text-sm text-ink-soft">Días promedio</p></div>
-        <div><p class="text-3xl font-semibold tabular-nums">${d.validacion.tasaAprobacion}%</p><p class="text-sm text-ink-soft">Aprobación</p></div>
-      </div>`)}
-      ${card({ title: 'Semilleros sin actividad reciente' }, alertas(d.semillerosInactivos, 'Todos los semilleros registran actividad en los últimos 90 días.', (s) => (s.diasSinActividad ? `${s.diasSinActividad} días` : 'Sin registros')))}
-      ${card({ title: 'Proyectos activos sin avances' }, alertas(d.proyectosEstancados, 'Los proyectos activos tienen avances recientes.', (p) => `${p.diasSinAvance} días`))}
-      ${card({ title: 'Convocatorias: tasa de aceptación' }, barList(d.convocatorias.map((c) => ({ label: c.titulo, value: c.tasa, hint: `${c.postulaciones} postulaciones` })), '%'))}
-      ${card({ title: 'Ocupación de eventos' }, barList(d.eventos.map((e) => ({ label: e.nombre, value: e.ocupacion, hint: `${e.inscritos} de ${e.cupos} cupos` })), '%'))}
-      ${card({ title: 'Impacto comunitario por semillero' }, barList(d.impactoPorSemillero.map((i) => ({ label: i.nombre, value: i.interacciones, hint: `${i.publicaciones} publicaciones` }))))}
-      ${card({ title: 'Distribución de niveles' }, barList(d.distribucionNiveles.map((n) => ({ label: `${n.nivel} ${n.nivel === 1 ? 'estrella' : 'estrellas'}`, value: n.semilleros }))))}
-    </div>
-  </div>`;
+/** Grafica de cada tarjeta a partir de los indicadores (la clave es el data-region de la plantilla). */
+const GRAFICAS = {
+  productividad: (d) => barList(d.productividadPorFacultad.map((f) => ({ label: f.facultad, value: f.logros, hint: `${f.xp} XP acumulados` }))),
+  produccion: (d) => barList(d.productosPorTipo.map((p) => ({ label: p.tipo, value: p.total }))),
+  vinculacion: (d) => barList(d.vinculacionPorFacultad.map((v) => ({ label: v.facultad, value: v.tasa, hint: `${v.vinculados} de ${v.estudiantes} estudiantes en semilleros` })), '%'),
+  inactivos: (d) => alertas(d.semillerosInactivos, 'Todos los semilleros registran actividad en los últimos 90 días.', (s) => (s.diasSinActividad ? `${s.diasSinActividad} días` : 'Sin registros')),
+  estancados: (d) => alertas(d.proyectosEstancados, 'Los proyectos activos tienen avances recientes.', (p) => `${p.diasSinAvance} días`),
+  convocatorias: (d) => barList(d.convocatorias.map((c) => ({ label: c.titulo, value: c.tasa, hint: `${c.postulaciones} postulaciones` })), '%'),
+  eventos: (d) => barList(d.eventos.map((e) => ({ label: e.nombre, value: e.ocupacion, hint: `${e.inscritos} de ${e.cupos} cupos` })), '%'),
+  impacto: (d) => barList(d.impactoPorSemillero.map((i) => ({ label: i.nombre, value: i.interacciones, hint: `${i.publicaciones} publicaciones` }))),
+  niveles: (d) => barList(d.distribucionNiveles.map((n) => ({ label: `${n.nivel} ${n.nivel === 1 ? 'estrella' : 'estrellas'}`, value: n.semilleros }))),
+};
 
 export default function iniciar({ root }) {
   let datos = null;
 
-  mount(
-    root,
-    html`${pageHeader({
-        title: 'Indicadores institucionales',
-        description: 'Información para decidir dónde reforzar, reconocer y acompañar a la comunidad investigativa.',
-        actions: html`<div class="no-print flex gap-3">
-          ${button({ variant: 'secondary', icon: 'printer-line', children: 'Exportar PDF', 'data-action': 'pdf' })}
-          ${button({ icon: 'file-excel-2-line', children: 'Exportar Excel', 'data-action': 'excel' })}
-        </div>`,
-      })}
-      <div id="indicadores"></div>`,
-  );
-
-  const contenedor = root.querySelector('#indicadores');
-  cargar(contenedor, () => analiticaApi.indicadores(), (d) => {
+  cargarMarco(root.querySelector('[data-carga]'), () => analiticaApi.indicadores(), (d) => {
     datos = d;
-    mount(contenedor, vista(d));
+    enlazar(root, { ...d, tasaAprobacion: `${d.validacion.tasaAprobacion}%` });
+    Object.entries(GRAFICAS).forEach(([clave, grafica]) => mount(root.querySelector(`[data-region="${clave}"]`), grafica(d)));
   });
 
   on(root, 'click', '[data-action="pdf"]', () => window.print());

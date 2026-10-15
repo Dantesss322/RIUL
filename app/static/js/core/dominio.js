@@ -9,7 +9,7 @@ export const ROLES = {
   estudiante: 'Estudiante investigador',
 };
 
-/** Estados y el tono visual con que se muestran (ver components/ui/Badge). */
+/** Estados y el tono visual con que se muestran (insignia `badge-<tono>` de app.css). */
 export const ESTADOS = {
   pendiente: { label: 'Pendiente', tone: 'warning' },
   aprobado: { label: 'Aprobado', tone: 'success' },
@@ -24,11 +24,8 @@ export const ESTADOS = {
   en_pausa: { label: 'En pausa', tone: 'warning' },
 };
 
-export const CATEGORIAS_PUBLICACION = ['Avance', 'Evento', 'Logro', 'Divulgación', 'Convocatoria'];
-export const MODALIDADES = ['Presencial', 'Virtual', 'Híbrida'];
+/** Roles dentro de un semillero (listas cerradas de la plantilla semillero_detalle.html). */
 export const ROLES_INTEGRANTE = ['Coinvestigador', 'Joven investigador', 'Auxiliar de investigación'];
-export const ESTADOS_PROYECTO = ['activo', 'en_pausa', 'finalizado'];
-export const ICONOS_INSIGNIA = ['medalla', 'trofeo', 'libro', 'idea', 'calendario', 'equipo'];
 
 /** Convierte una lista de valores en opciones de <select>. */
 export const toOptions = (values, labels = {}) =>

@@ -1,0 +1,11 @@
+{% from "partials/_ui.html" import ri %}
+{# Marco de los modales: js/core/dom.js (formModal) lo clona y coloca dentro el formulario de un <template>. #}
+<template id="plantilla-modal">
+  <div class="p-6">
+    <header class="mb-5 flex items-start justify-between gap-4">
+      <h2 class="text-xl font-semibold tracking-tight" data-modal-titulo></h2>
+      <button type="button" data-close aria-label="Cerrar" class="-m-1 rounded-full p-1 text-ink-soft transition-colors hover:bg-canvas">{{ ri("close-line", 22) }}</button>
+    </header>
+    <div data-modal-cuerpo></div>
+  </div>
+</template>

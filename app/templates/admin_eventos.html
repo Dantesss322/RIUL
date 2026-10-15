@@ -1,3 +1,35 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, tabs, gestor, field, modal_actions %}
 {% set page = "admin_eventos" %}
 {% block title %}Eventos y convocatorias{% endblock %}
+
+{% block content %}
+{{ page_header("Eventos y convocatorias", "Publica las oportunidades y actividades de la red de investigación.") }}
+
+<div class="mb-4">{{ tabs([{"id": "eventos", "label": "Eventos"}, {"id": "convocatorias", "label": "Convocatorias"}]) }}</div>
+
+{{ gestor("eventos", "Eventos institucionales", "evento") }}
+{{ gestor("convocatorias", "Convocatorias", "convocatoria", oculto=True) }}
+
+{# Formularios de los modales (uno por recurso). #}
+<template data-modal="eventos">
+  <form class="space-y-4">
+    {{ field("Nombre del evento", "nombre", required=True) }}
+    {{ field("Descripción", "descripcion", type="textarea", required=True) }}
+    {{ field("Fecha", "fecha", type="date", required=True) }}
+    {{ field("Lugar", "lugar", required=True) }}
+    {{ field("Modalidad", "modalidad", type="select", options=["Presencial", "Virtual", "Híbrida"], required=True) }}
+    {{ field("Cupos", "cupos", type="number", min="1", required=True) }}
+    {{ modal_actions() }}
+  </form>
+</template>
+
+<template data-modal="convocatorias">
+  <form class="space-y-4">
+    {{ field("Título", "titulo", required=True) }}
+    {{ field("Descripción", "descripcion", type="textarea", required=True) }}
+    {{ field("Fecha límite", "fechaLimite", type="date", required=True) }}
+    {{ modal_actions() }}
+  </form>
+</template>
+{% endblock %}

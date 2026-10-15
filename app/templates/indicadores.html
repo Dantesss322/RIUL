@@ -1,3 +1,51 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, card, stat, button %}
 {% set page = "indicadores" %}
+{# Cada tarjeta responde una pregunta de gestion; JS escribe su grafica en la region con ese nombre. #}
+{% set tarjetas = [
+  ("productividad", "Productividad por facultad"),
+  ("produccion", "Producción por tipo de logro"),
+  ("vinculacion", "Vinculación estudiantil por facultad"),
+  ("validacion", "Eficiencia de validación"),
+  ("inactivos", "Semilleros sin actividad reciente"),
+  ("estancados", "Proyectos activos sin avances"),
+  ("convocatorias", "Convocatorias: tasa de aceptación"),
+  ("eventos", "Ocupación de eventos"),
+  ("impacto", "Impacto comunitario por semillero"),
+  ("niveles", "Distribución de niveles"),
+] %}
 {% block title %}Indicadores{% endblock %}
+
+{% block content %}
+{% call page_header("Indicadores institucionales", "Información para decidir dónde reforzar, reconocer y acompañar a la comunidad investigativa.") %}
+  <div class="no-print flex gap-3">
+    {{ button("Exportar PDF", variant="secondary", icon="printer-line", data_action="pdf") }}
+    {{ button("Exportar Excel", icon="file-excel-2-line", data_action="excel") }}
+  </div>
+{% endcall %}
+
+<div data-carga class="space-y-6">
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    {{ stat("Semilleros activos", "resumen.semillerosActivos") }}
+    {{ stat("Publicaciones", "resumen.publicaciones") }}
+    {{ stat("Logros aprobados", "resumen.logrosAprobados") }}
+    {{ stat("Convocatorias abiertas", "resumen.convocatoriasAbiertas") }}
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    {% for clave, titulo in tarjetas %}
+    {% call card(titulo) %}
+      {% if clave == "validacion" %}
+      <div class="grid grid-cols-3 gap-3 text-center">
+        <div><p class="text-3xl font-semibold tabular-nums" data-bind="validacion.pendientes"></p><p class="text-sm text-ink-soft">Pendientes</p></div>
+        <div><p class="text-3xl font-semibold tabular-nums" data-bind="validacion.antiguedadPromedioDias"></p><p class="text-sm text-ink-soft">Días promedio</p></div>
+        <div><p class="text-3xl font-semibold tabular-nums" data-bind="tasaAprobacion"></p><p class="text-sm text-ink-soft">Aprobación</p></div>
+      </div>
+      {% else %}
+      <div data-region="{{ clave }}"></div>
+      {% endif %}
+    {% endcall %}
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

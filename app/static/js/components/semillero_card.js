@@ -31,7 +31,7 @@ export function semilleroCard(semillero, { puedeVincularse = false } = {}) {
           children: siguiendo ? 'Siguiendo' : 'Seguir',
           'data-action': 'seguir',
           'data-id': id,
-          'data-siguiendo': siguiendo,
+          'data-siguiendo': String(siguiendo),
         })}
         ${puedeSolicitar ? button({ size: 'sm', icon: 'user-add-line', children: 'Solicitar vinculación', 'data-action': 'vincular', 'data-id': id }) : ''}
       </div>`,

@@ -3,7 +3,9 @@
 {% block body %}
 <div class="flex min-h-screen flex-col">
   {% include "partials/_public_header.html" %}
-  <main id="page" class="flex-1"></main>
+  <main id="page" class="flex-1">
+    {% block content %}{% endblock %}
+  </main>
   {% include "partials/_public_footer.html" %}
 </div>
 {% endblock %}

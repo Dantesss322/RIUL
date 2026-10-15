@@ -1,3 +1,75 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, card, stat %}
 {% set page = "dashboard" %}
 {% block title %}Inicio{% endblock %}
+
+{% block content %}
+{# Contador con enlace al modulo donde se atiende; `bind` es la ruta del numero en los datos. #}
+{% macro pendiente(href, etiqueta, bind) %}
+<a href="{{ href }}" class="flex items-center justify-between rounded-xl px-3 py-2.5 transition-colors hover:bg-canvas">
+  <span>{{ etiqueta }}</span>
+  <span class="contador" data-bind="{{ bind }}"></span>
+</a>
+{% endmacro %}
+
+{{ page_header("Hola", title_bind="saludo", description_bind="rolEtiqueta") }}
+
+<nav aria-label="Accesos rápidos" class="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5" data-region="accesos"></nav>
+
+{# Marco de datos: js/pages/dashboard.js lo muestra cuando llega el resumen del rol. #}
+<div data-carga>
+  {# Administrador #}
+  <div class="space-y-6" data-roles="administrador">
+    {% call card("Requiere tu atención") %}
+      {{ pendiente("/app/admin/usuarios", "Cuentas por aprobar", "pendientes.cuentas") }}
+      {{ pendiente("/app/validaciones", "Logros en validación", "pendientes.logros") }}
+      {{ pendiente("/app/validaciones", "Postulaciones por resolver", "pendientes.postulaciones") }}
+    {% endcall %}
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {{ stat("Usuarios activos", "totales.usuarios") }}
+      {{ stat("Semilleros", "totales.semilleros") }}
+      {{ stat("Publicaciones", "totales.publicaciones") }}
+      {{ stat("Logros aprobados", "totales.logrosAprobados") }}
+    </div>
+    {% call card("Semilleros líderes del ranking") %}
+      <ol class="divide-y divide-line/60" data-region="ranking"></ol>
+    {% endcall %}
+  </div>
+
+  {# Docente líder y estudiante #}
+  <div class="space-y-6" data-roles="docente_lider estudiante">
+    <div class="grid gap-4 sm:grid-cols-3">
+      <div data-roles="docente_lider">{{ stat("XP del semillero", "xp") }}</div>
+      <div data-roles="estudiante">{{ stat("XP que aportas", "xp") }}</div>
+      {{ stat("Posición en el ranking", "posicion", hint_bind="posicionDetalle") }}
+      {{ stat("Insignias obtenidas", "totalInsignias") }}
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      {% call card(title_bind="tituloSemilleros") %}
+        <div data-region="semilleros"></div>
+      {% endcall %}
+
+      {% call card("Pendientes") %}
+        <div data-roles="docente_lider">
+          {{ pendiente("/app/validaciones", "Solicitudes de vinculación", "pendientes.vinculaciones") }}
+          {{ pendiente("/app/validaciones", "Publicaciones por aprobar", "pendientes.publicaciones") }}
+          {{ pendiente("/app/validaciones", "Logros por enviar a validación", "pendientes.logros") }}
+        </div>
+        <div data-roles="estudiante">
+          {{ pendiente("/app/logros", "Logros en revisión", "pendientes.logros") }}
+          {{ pendiente("/app/semilleros", "Solicitudes de vinculación", "pendientes.solicitudes") }}
+        </div>
+      {% endcall %}
+
+      {% call card("Insignias") %}
+        <div data-region="insignias"></div>
+      {% endcall %}
+
+      {% call card("Actividad reciente") %}
+        <div data-region="actividad"></div>
+      {% endcall %}
+    </div>
+  </div>
+</div>
+{% endblock %}

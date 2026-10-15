@@ -1,3 +1,23 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, link_button, ri %}
 {% set page = "logros" %}
+{% set pipeline = ["Registrado", "En validación", "Aprobado", "XP", "Insignia", "Nivel"] %}
 {% block title %}Mis logros{% endblock %}
+
+{% block content %}
+{% call page_header("Mis logros", "Registra tu actividad investigativa y sigue su validación.") %}
+  {{ link_button("Registrar logro", "/app/logros/nuevo", icon="add-line") }}
+{% endcall %}
+
+{# Recorrido de un logro: del registro al nivel del semillero. #}
+<ol aria-label="Flujo de un logro" class="mb-6 flex flex-wrap items-center gap-1 text-sm text-ink-soft">
+  {% for paso in pipeline %}
+  <li class="flex items-center gap-1">
+    <span class="rounded-full bg-black/5 px-3 py-1">{{ paso }}</span>
+    {% if not loop.last %}{{ ri("arrow-right-s-line", 16) }}{% endif %}
+  </li>
+  {% endfor %}
+</ol>
+
+<div data-region="lista"></div>
+{% endblock %}

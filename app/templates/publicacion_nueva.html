@@ -1,3 +1,47 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, field, button %}
 {% set page = "publicacion_nueva" %}
 {% block title %}Nueva publicación{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-2xl">
+  {{ page_header("Nueva publicación", "Comparte con la comunidad en cuatro pasos.") }}
+
+  {# Asistente de 4 pasos (RNF-3): js/core/dom.js (iniciarAsistente) muestra un paso a la vez. #}
+  <div data-wizard data-envio="Publicar">
+    <ol class="stepper" aria-label="Progreso" data-stepper></ol>
+
+    <form novalidate>
+      <section class="card space-y-5" data-step="Crear">
+        {{ field("¿Qué quieres compartir?", "contenido", type="textarea", rows=6, placeholder="Describe el avance, evento o resultado (mínimo 10 caracteres).") }}
+      </section>
+
+      <section class="card space-y-5" data-step="Evidencia" hidden>
+        {{ field("Evidencia (opcional)", "evidencia", type="file", hint="Adjunta un documento o imagen que respalde tu publicación.") }}
+      </section>
+
+      <section class="card space-y-5" data-step="Categoría" hidden>
+        {{ field("Categoría", "categoria", type="select", options=["Avance", "Evento", "Logro", "Divulgación", "Convocatoria"]) }}
+        {{ field("Semillero", "idSemillero", type="select", hint="La publicación se asocia al semillero que selecciones.") }}
+      </section>
+
+      <section class="card space-y-5" data-step="Publicar" hidden>
+        <div>
+          <p class="text-sm text-ink-soft" data-bind="categoria"></p>
+          <p class="mt-1 whitespace-pre-line" data-bind="contenido"></p>
+          <div class="mt-3" data-region="evidencia"></div>
+        </div>
+        {{ field("Mostrar también en la página pública", "esPublico", type="checkbox", hint="Los visitantes verán el contenido sin datos personales.") }}
+        <p class="rounded-xl bg-warning-soft px-4 py-3 text-sm text-warning" data-roles="estudiante">
+          El líder de tu semillero debe aprobar la publicación antes de que sea visible.
+        </p>
+      </section>
+
+      <div class="mt-5 flex items-center justify-between">
+        {{ button("Atrás", variant="secondary", icon="arrow-left-line", data_back=True) }}
+        {{ button("Continuar", type="submit", data_next=True) }}
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

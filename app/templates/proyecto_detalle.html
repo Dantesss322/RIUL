@@ -1,3 +1,46 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, card, button, link_button, field, modal_actions %}
 {% set page = "proyecto_detalle" %}
 {% block title %}Proyecto{% endblock %}
+
+{% block content %}
+{# Marco que js/pages/proyecto_detalle.js muestra cuando llega el proyecto. Los botones con
+   data-gestor solo se ven para quien puede gestionar el proyecto (lider del semillero). #}
+<div data-carga>
+  {% call page_header("", title_bind="nombre", description_bind="detalle") %}
+    <span data-region="estado"></span>
+    {{ link_button("Ver semillero", "#", variant="secondary", data_ver_semillero=True) }}
+    {{ button("Publicar avance", icon="add-line", data_action="avance", data_gestor=True, hidden=True) }}
+    {{ button("Registrar producto", variant="secondary", icon="add-line", data_action="producto", data_gestor=True, hidden=True) }}
+  {% endcall %}
+
+  <p class="mb-6 max-w-3xl text-ink-soft" data-bind="descripcion"></p>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    {% call card("Avances del proyecto") %}
+      <div data-region="avances"></div>
+    {% endcall %}
+    {% call card("Productos de investigación") %}
+      <div data-region="productos"></div>
+    {% endcall %}
+  </div>
+</div>
+
+{# Formularios de los modales #}
+<template data-modal="avance" data-title="Publicar avance">
+  <form class="space-y-4">
+    {{ field("¿Qué se avanzó?", "descripcion", type="textarea", required=True) }}
+    {{ field("Evidencia (opcional)", "evidencia", type="file") }}
+    {{ modal_actions("Publicar") }}
+  </form>
+</template>
+
+<template data-modal="producto" data-title="Registrar producto de investigación">
+  <form class="space-y-4">
+    {{ field("Tipo de producto", "idTipoLogro", type="select", required=True) }}
+    {{ field("Título", "titulo", required=True) }}
+    {{ field("Evidencia", "evidencia", type="file", hint="El producto se enviará a validación del administrador.", required=True) }}
+    {{ modal_actions("Registrar") }}
+  </form>
+</template>
+{% endblock %}

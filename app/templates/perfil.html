@@ -1,3 +1,49 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, tabs, card, stat, field, button %}
 {% set page = "perfil" %}
 {% block title %}Mi perfil{% endblock %}
+
+{% block content %}
+{{ page_header("Mi perfil", "Tus datos y tu trayectoria investigativa en un solo lugar.") }}
+
+<div class="mb-6">{{ tabs([{"id": "datos", "label": "Datos personales"}, {"id": "hoja", "label": "Hoja de vida"}]) }}</div>
+
+{# Datos personales: js/pages/perfil.js escribe los valores del usuario en sesion. #}
+<section class="card" data-panel="datos">
+  <div class="mb-6 flex items-center gap-4">
+    <span class="avatar avatar-lg" aria-hidden="true" data-bind="iniciales"></span>
+    <div>
+      <p class="text-lg font-semibold tracking-tight" data-bind="nombre"></p>
+      <p class="text-ink-soft" data-bind="detalle"></p>
+    </div>
+  </div>
+  <form class="grid gap-4 sm:grid-cols-2" data-form="perfil">
+    {{ field("Nombre completo", "nombre", required=True) }}
+    {{ field("Correo", "correo", disabled=True, readonly=True) }}
+    {{ field("Teléfono", "telefono", type="tel") }}
+    {{ field("ORCID", "orcid", placeholder="0000-0000-0000-0000") }}
+    {{ field("Líneas de investigación", "lineasInvestigacion", classes="sm:col-span-2") }}
+    {{ field("Biografía", "biografia", type="textarea", classes="sm:col-span-2") }}
+    <div class="sm:col-span-2">{{ button("Guardar cambios", type="submit") }}</div>
+  </form>
+</section>
+
+{# Hoja de vida: se arma sola con los logros aprobados (RF-4.6). #}
+<div class="space-y-6" data-panel="hoja" hidden>
+  <div data-carga class="space-y-6">
+    <div class="grid gap-4 sm:grid-cols-3">
+      {{ stat("XP aportado", "xpAportado") }}
+      {{ stat("Insignias", "totalInsignias") }}
+      {{ stat("Semilleros", "totalSemilleros", hint_bind="detalleSemilleros") }}
+    </div>
+    <div data-bloque="insignias">
+      {% call card("Insignias obtenidas") %}
+        <ul class="grid gap-3 sm:grid-cols-2" data-region="insignias"></ul>
+      {% endcall %}
+    </div>
+    {% call card("Trayectoria investigativa") %}
+      <div data-region="linea"></div>
+    {% endcall %}
+  </div>
+</div>
+{% endblock %}

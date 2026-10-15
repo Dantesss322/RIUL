@@ -1,3 +1,16 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, field, button %}
 {% set page = "proyectos" %}
 {% block title %}Proyectos{% endblock %}
+
+{% block content %}
+{{ page_header("Proyectos", "Seguimiento de los proyectos de investigación de tus semilleros.") }}
+
+<form role="search" class="mb-6 flex flex-wrap items-end gap-3" data-form="filtros">
+  {{ field("Buscar proyectos", "q", type="search", placeholder="Nombre del proyecto", classes="grow") }}
+  {{ field("Estado", "estado", type="select", placeholder="Todos", options=[("activo", "Activo"), ("en_pausa", "En pausa"), ("finalizado", "Finalizado")]) }}
+  {{ button("Filtrar", type="submit", icon="search-line") }}
+</form>
+
+<div data-region="listado"></div>
+{% endblock %}

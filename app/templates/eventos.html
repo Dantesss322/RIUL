@@ -1,3 +1,13 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, tabs %}
 {% set page = "eventos" %}
 {% block title %}Eventos y convocatorias{% endblock %}
+
+{% block content %}
+{{ page_header("Eventos y convocatorias", "Participa en la vida académica y postúlate a las oportunidades abiertas.") }}
+
+<div class="mb-6">{{ tabs([{"id": "eventos", "label": "Eventos"}, {"id": "convocatorias", "label": "Convocatorias"}]) }}</div>
+
+<div data-panel="eventos" data-region="eventos"></div>
+<div data-panel="convocatorias" data-region="convocatorias" hidden></div>
+{% endblock %}

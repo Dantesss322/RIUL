@@ -1,13 +1,19 @@
-/** Ranking e insignias (RF-4.4, RF-6.3): semilleros, investigadores e insignias con su progreso. */
-import { html, mount, card, cargar, insigniaCard, levelStars, on, pageHeader, tabs } from '../core/ui.js';
+/**
+ * Ranking e insignias (RF-4.4, RF-6.3): semilleros, investigadores e insignias con su progreso.
+ * El encabezado, las pestanas y las tarjetas de insignias los escribe templates/ranking.html.
+ */
+import { html, mount, card, cargar, insigniaCard, levelStars } from '../core/ui.js';
+import { iniciarTabs } from '../core/dom.js';
 import { analiticaApi } from '../core/api.js';
 
 const posicion = (valor) =>
   html`<span class="flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${valor <= 3 ? 'bg-accent-soft text-accent' : 'bg-canvas text-ink-soft'}">${valor}</span>`;
 
 export default function iniciar({ root }) {
-  let pestana = 'semilleros';
   let propios = [];
+
+  const region = (nombre) => root.querySelector(`[data-region="${nombre}"]`);
+  const bloqueInsignias = root.querySelector('[data-bloque="insignias"]');
 
   const ranking = (filas, tipo) =>
     card({}, filas.length === 0
@@ -24,28 +30,23 @@ export default function iniciar({ root }) {
           </li>`,
         )}</ol>`);
 
-  const insignias = ({ usuario, semillero }) =>
-    html`<div class="grid gap-6 lg:grid-cols-2">
-      ${card({ title: 'Tus insignias' }, html`<ul class="space-y-3">${usuario.map(insigniaCard)}</ul>`)}
-      ${semillero.length ? card({ title: 'Insignias de tu semillero' }, html`<ul class="space-y-3">${semillero.map(insigniaCard)}</ul>`) : ''}
-    </div>`;
-
-  const dibujar = () => {
-    mount(
-      root,
-      html`${pageHeader({ title: 'Ranking e insignias', description: 'El reconocimiento a la actividad investigativa, actualizado al aprobar cada logro.' })}
-        <div class="mb-4">${tabs([{ id: 'semilleros', label: 'Semilleros' }, { id: 'investigadores', label: 'Investigadores' }, { id: 'insignias', label: 'Insignias' }], pestana)}</div>
-        <div id="contenido"></div>`,
-    );
-    const contenido = root.querySelector('#contenido');
-    if (pestana === 'insignias') cargar(contenido, () => analiticaApi.insignias(), (d) => mount(contenido, insignias(d)));
-    else cargar(contenido, () => analiticaApi.ranking(pestana), (filas) => mount(contenido, ranking(filas, pestana)));
+  const mostrarInsignias = ({ usuario, semillero }) => {
+    mount(region('insignias-usuario'), usuario.map(insigniaCard));
+    root.querySelector('[data-bloque="insignias-semillero"]').hidden = semillero.length === 0;
+    mount(region('insignias-semillero'), semillero.map(insigniaCard));
   };
 
-  on(root, 'click', '[data-tab]', (tab) => {
-    pestana = tab.dataset.tab;
-    dibujar();
-  });
+  const cargarPestana = (id) => {
+    const esInsignias = id === 'insignias';
+    bloqueInsignias.hidden = !esInsignias;
+    region('ranking').hidden = esInsignias;
+
+    if (esInsignias) {
+      cargar(region('insignias-usuario'), () => analiticaApi.insignias(), mostrarInsignias);
+    } else {
+      cargar(region('ranking'), () => analiticaApi.ranking(id), (filas) => mount(region('ranking'), ranking(filas, id)));
+    }
+  };
 
   // Semilleros del usuario, para resaltar "Tu semillero" (el administrador no tiene).
   analiticaApi
@@ -54,5 +55,5 @@ export default function iniciar({ root }) {
       propios = (d.semilleros ?? []).map((s) => s.id);
     })
     .catch(() => {})
-    .finally(dibujar);
+    .finally(() => iniciarTabs(root, { alCambiar: cargarPestana }));
 }

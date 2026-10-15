@@ -1,3 +1,24 @@
 {% extends "app_base.html" %}
+{% from "partials/_ui.html" import page_header, field, button, link_button %}
 {% set page = "publicaciones" %}
 {% block title %}Publicaciones{% endblock %}
+
+{% block content %}
+{% call page_header("Publicaciones", "Lo que está compartiendo la comunidad investigativa.") %}
+  {{ link_button("Publicar", "/app/publicaciones/nueva", icon="add-line", data_roles="docente_lider estudiante") }}
+{% endcall %}
+
+<div class="mb-6 max-w-xs">
+  {{ field("Categoría", "categoria", type="select", placeholder="Todas las categorías", options=["Avance", "Evento", "Logro", "Divulgación", "Convocatoria"]) }}
+</div>
+
+<div data-region="feed"></div>
+
+{# Formulario de comentario: js/pages/publicaciones.js lo coloca bajo cada publicacion abierta. #}
+<template data-tpl="comentario">
+  <form class="flex items-end gap-2" data-form="comentario">
+    {{ field("Escribe un comentario", "contenido", placeholder="Escribe un comentario", classes="grow", sr_only=True, required=True) }}
+    {{ button(type="submit", icon="send-plane-line", aria_label="Enviar comentario") }}
+  </form>
+</template>
+{% endblock %}
