@@ -1,0 +1,41 @@
+services:
+  # Aplicacion RIUL (Flask servido con gunicorn)
+  app:
+    build: .
+    # Nombre del contenedor
+    container_name: RIUL
+    # localhost:5000 -> contenedor:5000
+    ports:
+      - "5000:5000"
+    # Variables de entorno (DATABASE_URL, JWT_SECRET_KEY, USE_MOCKS)
+    env_file:
+      - .env
+    # La aplicacion arranca cuando la base de datos esta lista
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Base de datos MySQL
+  db:
+    image: mysql:8.4
+    container_name: RIUL_mysql
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    # Los datos sobreviven a reinicios y a `docker compose down`
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql_data:

@@ -1,0 +1,21 @@
+{% from "partials/_macros.html" import brand %}
+<header class="sticky top-0 z-20 border-b border-line/70 bg-canvas/80 backdrop-blur-xl">
+  <div class="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+    {{ brand("/") }}
+    <nav aria-label="Explorar" class="hidden items-center gap-1 sm:flex">
+      <a href="/explorar/semilleros" class="rounded-lg px-4 py-1.5 text-sm font-medium text-ink-soft transition-colors hover:text-ink">Semilleros</a>
+      <a href="/explorar/proyectos" class="rounded-lg px-4 py-1.5 text-sm font-medium text-ink-soft transition-colors hover:text-ink">Proyectos</a>
+      <a href="/explorar/eventos" class="rounded-lg px-4 py-1.5 text-sm font-medium text-ink-soft transition-colors hover:text-ink">Eventos</a>
+    </nav>
+    <div class="flex items-center gap-2">
+      {# main.js muestra uno u otro segun haya sesion #}
+      <div id="auth-guest" class="flex items-center gap-2">
+        <a href="/login" class="inline-flex h-8 items-center rounded-xl px-3.5 text-sm font-medium text-accent transition-colors hover:bg-accent-soft">Iniciar sesión</a>
+        <a href="/registro" class="inline-flex h-8 items-center rounded-xl bg-accent px-3.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover">Registrarse</a>
+      </div>
+      <div id="auth-user" hidden>
+        <a href="/app" class="inline-flex h-8 items-center rounded-xl bg-accent px-3.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover">Ir a mi panel</a>
+      </div>
+    </div>
+  </div>
+</header>

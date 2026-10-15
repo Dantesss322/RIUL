@@ -1,0 +1,32 @@
+{# Macros reutilizables de las plantillas. #}
+
+{# Marca de RIUL: tres nodos conectados (la "red" de investigacion). `inverted` para fondos oscuros. #}
+{% macro brand(href="/", inverted=False) %}
+<a href="{{ href }}" class="flex items-center gap-2.5 text-lg font-bold tracking-tight {{ 'text-white' if inverted }}">
+  <span class="flex size-8 items-center justify-center rounded-xl bg-accent text-white">
+    <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+      <path d="M7.2 15.6 10.9 8.4M13.2 8.3l3.9 5.9M8.4 17.2h7.2" />
+      <circle cx="6.2" cy="17.2" r="2" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="6.6" r="2" fill="currentColor" stroke="none" />
+      <circle cx="17.8" cy="16.2" r="2" fill="currentColor" stroke="none" />
+    </svg>
+  </span>
+  RIUL
+</a>
+{% endmacro %}
+
+{# Tarjeta de vidrio del fondo de las pantallas de acceso. #}
+{% macro glass_card(title, detail, icon=None, classes="") %}
+<div class="rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-white shadow-lg shadow-black/10 backdrop-blur-md {{ classes }}">
+  <div class="flex items-center gap-3">
+    {% if icon %}
+    <span class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white"><i class="ri-{{ icon }}" style="font-size:20px;line-height:1"></i></span>
+    {% endif %}
+    <div class="min-w-0">
+      <p class="font-medium">{{ title }}</p>
+      <p class="truncate text-sm text-sidebar-soft">{{ detail }}</p>
+    </div>
+  </div>
+  {{ caller() if caller }}
+</div>
+{% endmacro %}

@@ -1,0 +1,18 @@
+# Framework web
+Flask==3.1.2
+# ORM (conexion con la base de datos)
+Flask-SQLAlchemy==3.1.1
+# Motor del ORM: se fija la serie 2.0 con la que Flask-SQLAlchemy 3.1 esta probado
+SQLAlchemy==2.0.54
+# JWT (JSON Web Token)
+Flask-JWT-Extended==4.7.1
+# Validacion y serializacion de datos
+marshmallow==4.0.1
+# Driver de conexion Python - MySQL
+PyMySQL==1.1.1
+# Requerido por MySQL 8 (autenticacion caching_sha2_password)
+cryptography==50.0.2
+# Servidor WSGI
+gunicorn==23.0.0
+# Utilidades de seguridad y contrasenas
+Werkzeug==3.1.3

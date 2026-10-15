@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Entornos virtuales
+.venv/
+venv/
+
+# Variables de entorno (se entregan al contenedor con env_file)
+.env
+
+# VS Code
+.vscode/
+
+# Pruebas
+.pytest_cache/
+
+# Base de datos
+mysql_data
+
+# Git
+.git/
+.gitignore

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% set area = "app" %}
+{% block body %}
+<div class="min-h-screen lg:grid lg:grid-cols-[17rem_1fr]">
+  {% include "partials/_sidebar.html" %}
+  <div id="overlay" hidden class="fixed inset-0 z-30 bg-black/30 backdrop-blur-sm lg:hidden"></div>
+
+  <div class="min-w-0">
+    {% include "partials/_topbar.html" %}
+    {# El contenido de cada pantalla lo dibuja js/pages/<pagina>.js #}
+    <main id="page" class="mx-auto max-w-6xl px-4 py-6 sm:px-6"></main>
+  </div>
+</div>
+{% endblock %}

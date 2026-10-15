@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Página no encontrada{% endblock %}
+{% block body %}
+<main class="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
+  <p class="text-sm font-medium text-accent">Error 404</p>
+  <h1 class="text-4xl font-semibold tracking-tight">No encontramos esta página</h1>
+  <p class="max-w-md text-ink-soft">Es posible que el enlace haya cambiado o que ya no exista.</p>
+  <a href="/" class="inline-flex h-12 items-center rounded-xl bg-accent px-7 font-medium text-white transition-colors hover:bg-accent-hover">Volver al inicio</a>
+</main>
+{% endblock %}

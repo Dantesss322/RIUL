@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "partials/_macros.html" import brand %}
+{% set area = "auth" %}
+{% block body %}
+{# Fondo azul tinta con tarjetas translucidas a los lados y el formulario al centro. #}
+<div class="relative min-h-screen overflow-hidden bg-sidebar">
+  {% include "partials/_auth_backdrop.html" %}
+
+  <div class="relative flex min-h-screen flex-col px-5 py-4 sm:px-10">
+    <header class="flex items-center justify-between">
+      {{ brand("/", inverted=True) }}
+      <a href="/" class="flex items-center gap-1.5 text-sm font-medium text-sidebar-soft transition-colors hover:text-white">
+        <i class="ri-arrow-left-line" aria-hidden="true"></i> Volver al inicio
+      </a>
+    </header>
+    <main id="page" class="flex flex-1 items-center justify-center py-4"></main>
+  </div>
+</div>
+{% endblock %}

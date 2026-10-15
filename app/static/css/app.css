@@ -1,0 +1,102 @@
+/*
+ * Estilos globales de RIUL.
+ * Los colores, radios y sombras (tokens) se declaran en la configuracion de Tailwind
+ * (templates/partials/_head.html). Aqui solo viven los estilos que Tailwind no cubre.
+ */
+
+html {
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+/* El atributo `hidden` debe ganar a las utilidades de `display` de Tailwind. */
+[hidden] {
+  display: none !important;
+}
+
+:focus-visible {
+  outline: 2px solid #2f5bea;
+  outline-offset: 2px;
+}
+
+::selection {
+  background-color: #e8edfd;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Barra de desplazamiento discreta para el menu lateral oscuro: delgada y translucida. */
+.sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.16) transparent;
+}
+
+.sidebar-scroll:hover {
+  scrollbar-color: rgb(255 255 255 / 0.32) transparent;
+}
+
+/* SweetAlert2 con la identidad visual de RIUL. */
+.swal2-popup {
+  border-radius: 1rem;
+  font-family: 'Inter Variable', system-ui, sans-serif;
+  padding: 1.75rem;
+}
+
+.swal2-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.swal2-html-container {
+  color: #596379;
+  font-size: 0.95rem;
+  white-space: pre-line;
+}
+
+.swal2-styled.swal2-confirm {
+  background-color: #2f5bea;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  padding: 0.6rem 1.5rem;
+}
+
+.swal2-styled.swal2-cancel {
+  background-color: #f2f4f9;
+  border-radius: 0.75rem;
+  color: #121a2e;
+  font-weight: 500;
+  padding: 0.6rem 1.5rem;
+}
+
+.swal2-styled.riul-swal-danger {
+  background-color: #c4001a;
+}
+
+.swal2-toast {
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+}
+
+.swal2-textarea {
+  border-radius: 0.75rem;
+  font-size: 0.95rem;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+  }
+}

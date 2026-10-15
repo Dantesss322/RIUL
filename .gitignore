@@ -1,0 +1,19 @@
+# Variables de entorno: no se suben; cada equipo parte de .env.example
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Entornos virtuales
+.venv/
+venv/
+
+# Editores y sistema operativo
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Pruebas
+.pytest_cache/

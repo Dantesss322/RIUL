@@ -1,0 +1,41 @@
+{# Fuentes, iconos y estilos. Tailwind, Remix Icon, Inter, Axios y SweetAlert2 llegan por CDN (como el ejemplo del profesor). #}
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/inter@5/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  // Tokens de diseño de RIUL: toda la identidad visual vive aqui.
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          canvas: '#f2f4f9',
+          surface: '#ffffff',
+          ink: { DEFAULT: '#121a2e', soft: '#596379' },
+          line: '#dfe3ed',
+          accent: { DEFAULT: '#2f5bea', hover: '#2349c9', soft: '#e8edfd' },
+          sidebar: {
+            DEFAULT: '#0f1a33',
+            ink: '#f3f5fb',
+            soft: '#9ba7c6',
+            line: 'rgb(255 255 255 / 0.09)',
+            hover: 'rgb(255 255 255 / 0.06)',
+            active: 'rgb(255 255 255 / 0.12)',
+          },
+          success: { DEFAULT: '#1f7a37', soft: '#e7f5ea' },
+          warning: { DEFAULT: '#9a4d00', soft: '#fff3e0' },
+          danger: { DEFAULT: '#c4001a', soft: '#fdeceb' },
+          star: '#f2a31b',
+        },
+        borderRadius: { card: '1rem' },
+        boxShadow: { card: '0 1px 2px rgb(15 26 51 / 0.05), 0 6px 20px rgb(15 26 51 / 0.05)' },
+        fontFamily: {
+          sans: ['"Inter Variable"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'system-ui', 'sans-serif'],
+        },
+      },
+    },
+  };
+</script>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">

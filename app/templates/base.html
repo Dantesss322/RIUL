@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="RIUL, la Red de Investigación de la Universidad Libre: semilleros, proyectos, publicaciones y logros en un solo lugar.">
+  <meta name="theme-color" content="#0f1a33">
+  {# true: la interfaz usa datos simulados en el navegador (ver USE_MOCKS en .env) #}
+  <meta name="riul-mocks" content="{{ 'true' if use_mocks else 'false' }}">
+  <title>{% block title %}RIUL{% endblock %} | Red de Investigación Universidad Libre</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/favicon.svg') }}">
+  {% include "partials/_head.html" %}
+</head>
+<body class="min-h-screen bg-canvas font-sans text-ink antialiased"
+      data-area="{{ area|default('') }}" data-page="{{ page|default('') }}"
+      data-id="{{ item_id|default('') }}" data-tipo="{{ tipo|default('') }}">
+  {% block body %}{% endblock %}
+  {% include "partials/_scripts.html" %}
+</body>
+</html>

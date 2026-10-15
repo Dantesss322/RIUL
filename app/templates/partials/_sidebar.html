@@ -1,0 +1,17 @@
+{% from "partials/_macros.html" import brand %}
+{# Menu lateral. El menu, la tarjeta del usuario y los botones los completa js/core/shell.js segun el rol. #}
+<aside id="sidebar" class="no-print fixed inset-y-0 left-0 z-40 flex w-72 -translate-x-full flex-col bg-sidebar text-sidebar-ink shadow-2xl transition-transform lg:sticky lg:top-0 lg:z-auto lg:h-screen lg:w-auto lg:translate-x-0 lg:shadow-none">
+  <div class="px-5 pt-5 pb-4">{{ brand("/app", inverted=True) }}</div>
+
+  <nav id="menu" aria-label="Principal" class="sidebar-scroll flex-1 space-y-5 overflow-y-auto px-3 pb-4"></nav>
+
+  <div class="space-y-1 border-t border-sidebar-line p-3">
+    <div id="user-card"></div>
+    <button id="btn-reset" type="button" hidden class="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-sidebar-soft transition-colors hover:bg-sidebar-hover hover:text-white">
+      <i class="ri-restart-line" style="font-size:18px;line-height:1" aria-hidden="true"></i>Restablecer datos de demo
+    </button>
+    <button id="btn-logout" type="button" class="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-sidebar-soft transition-colors hover:bg-sidebar-hover hover:text-white">
+      <i class="ri-logout-box-r-line" style="font-size:18px;line-height:1" aria-hidden="true"></i>Cerrar sesión
+    </button>
+  </div>
+</aside>
