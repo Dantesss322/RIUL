@@ -1,7 +1,7 @@
 """Schemas de eventos, convocatorias y postulaciones."""
 from marshmallow import fields, validate
 
-from app.schemas.base import BaseSchema, Entero, FechaHora, Texto, opcion
+from app.schemas.base_schema import BaseSchema, Entero, FechaHora, Texto, opcion
 from app.utils.constantes import MODALIDADES
 from app.utils.fechas import ahora, dias_desde
 

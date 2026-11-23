@@ -1,7 +1,7 @@
 """Consultas de eventos, convocatorias y postulaciones."""
 from sqlalchemy import case, func, select
 
-from app.estensions import db
+from app.extensions import db
 from app.models import Convocatoria, Evento, EventoParticipante, Postulacion
 from app.repositories.base import BaseRepository, mapa
 from app.utils.fechas import ahora

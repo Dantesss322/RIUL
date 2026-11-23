@@ -1,7 +1,7 @@
 """Transacciones de la base de datos."""
 from functools import wraps
 
-from app.estensions import db
+from app.extensions import db
 
 
 def transaccional(funcion):

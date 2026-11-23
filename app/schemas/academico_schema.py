@@ -2,7 +2,7 @@
 from marshmallow import fields, validate
 
 from app.models import Facultad
-from app.schemas.base import BaseSchema, Entero, Texto, existe
+from app.schemas.base_schema import BaseSchema, Entero, Texto, existe
 
 
 class FacultadSchema(BaseSchema):

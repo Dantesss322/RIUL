@@ -6,7 +6,7 @@ que reiniciar la aplicacion nunca duplica ni pisa lo que la administracion ya co
 from sqlalchemy import select
 from werkzeug.security import generate_password_hash
 
-from app.estensions import db
+from app.extensions import db
 from app.models import Facultad, Insignia, Nivel, Programa, TipoLogro, Usuario
 from app.utils.constantes import ADMINISTRADOR
 

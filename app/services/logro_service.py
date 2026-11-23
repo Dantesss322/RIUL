@@ -8,7 +8,7 @@ Al aprobar se congela el XP en `xp_asignado`, que se acumula en el semillero.
 from app.repositories.gamificacion_repository import LogroRepository
 from app.repositories.semillero_repository import SemilleroRepository
 from app.repositories.usuario_repository import UsuarioRepository
-from app.schemas.gamificacion import LogroSchema
+from app.schemas.gamificacion_schema import LogroSchema
 from app.services.gamificacion_service import otorgar_insignias, progreso_de_semillero
 from app.services.notificacion_service import notificar
 from app.services.permisos import es_lider_de, es_miembro_activo, obtener_o_404, semillero_o_404

@@ -4,8 +4,8 @@ El CRUD basico de eventos y convocatorias (editar, eliminar) lo da `catalogo_ser
 """
 from app.repositories.evento_repository import ConvocatoriaRepository, EventoRepository, PostulacionRepository
 from app.repositories.usuario_repository import UsuarioRepository
-from app.schemas.base import vista
-from app.schemas.evento import ConvocatoriaSchema, EventoSchema, PostulacionSchema
+from app.schemas.base_schema import vista
+from app.schemas.evento_schema import ConvocatoriaSchema, EventoSchema, PostulacionSchema
 from app.services.notificacion_service import notificar
 from app.services.permisos import obtener_o_404
 from app.utils.constantes import ADMINISTRADOR

@@ -1,22 +1,22 @@
 """Controlador de logros."""
 from flask import request
 
-from app.schemas.gamificacion import RechazarLogroSchema, RegistrarLogroSchema
+from app.schemas.gamificacion_schema import RechazarLogroSchema, RegistrarLogroSchema
 from app.services import logro_service
 from app.utils.auth import usuario_actual
 from app.utils.request import validar
-from app.utils.response import ok
+from app.utils.response import success
 
 
 def listar():
     solo_propios = request.args.get("mios") == "true"
-    return ok(logro_service.listar(usuario_actual(), request.args.get("estado"), solo_propios))
+    return success(logro_service.listar(usuario_actual(), request.args.get("estado"), solo_propios))
 
 
 def registrar():
     logro = logro_service.registrar(usuario_actual(), validar(RegistrarLogroSchema(), evidencia="requerida"))
     lo_envia_el_lider = logro["estado"] == "en_validacion"
-    return ok(
+    return success(
         logro,
         "Logro enviado a validación del administrador."
         if lo_envia_el_lider
@@ -27,14 +27,14 @@ def registrar():
 
 def enviar(id_):
     logro_service.enviar_a_validacion(usuario_actual(), id_)
-    return ok(None, "Logro enviado a validación del administrador.")
+    return success(None, "Logro enviado a validación del administrador.")
 
 
 def aprobar(id_):
     logro, mensaje = logro_service.aprobar(usuario_actual(), id_)
-    return ok(logro, mensaje)
+    return success(logro, mensaje)
 
 
 def rechazar(id_):
     logro_service.rechazar(usuario_actual(), id_, validar(RechazarLogroSchema())["motivo"])
-    return ok(None, "Logro rechazado. Se notificó al autor.")
+    return success(None, "Logro rechazado. Se notificó al autor.")

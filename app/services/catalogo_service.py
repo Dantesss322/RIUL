@@ -13,9 +13,9 @@ from app.models import (
 from app.repositories.academico_repository import FacultadRepository, ProgramaRepository
 from app.repositories.evento_repository import ConvocatoriaRepository, EventoRepository
 from app.repositories.gamificacion_repository import InsigniaRepository, NivelRepository, TipoLogroRepository
-from app.schemas.academico import FacultadSchema, ProgramaSchema
-from app.schemas.evento import ConvocatoriaSchema, EventoSchema
-from app.schemas.gamificacion import InsigniaSchema, NivelSchema, TipoLogroSchema
+from app.schemas.academico_schema import FacultadSchema, ProgramaSchema
+from app.schemas.evento_schema import ConvocatoriaSchema, EventoSchema
+from app.schemas.gamificacion_schema import InsigniaSchema, NivelSchema, TipoLogroSchema
 from app.services.crud_service import ServicioCrud
 
 facultades = ServicioCrud(

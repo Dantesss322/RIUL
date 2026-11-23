@@ -6,8 +6,8 @@ from flask_jwt_extended import create_access_token
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from app.repositories.usuario_repository import UsuarioRepository
-from app.schemas.base import vista
-from app.schemas.usuario import UsuarioSchema
+from app.schemas.base_schema import vista
+from app.schemas.usuario_schema import UsuarioSchema
 from app.services.notificacion_service import notificar
 from app.utils.constantes import ADMINISTRADOR, DOMINIO_INSTITUCIONAL
 from app.utils.db import transaccional

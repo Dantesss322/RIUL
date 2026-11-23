@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 
 from marshmallow import EXCLUDE, Schema, ValidationError, fields, validate
 
-from app.estensions import db
+from app.extensions import db
 from app.utils.archivos import nombre_original
 from app.utils.fechas import a_iso
 

@@ -4,7 +4,7 @@ from flask import Flask
 # Importamos las configuraciones
 from app import models  # noqa: F401  (registra las tablas en db.metadata para db.create_all)
 from app.config import Config
-from app.estensions import db, jwt
+from app.extensions import db, jwt
 
 # Manejo de las rutas con blueprints
 from app.routes import API_BLUEPRINTS

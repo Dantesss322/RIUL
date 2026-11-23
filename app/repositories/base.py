@@ -5,7 +5,7 @@ transaccion es el servicio (ver `utils/db.py::transaccional`).
 """
 from sqlalchemy import exists, func, inspect, select
 
-from app.estensions import db
+from app.extensions import db
 
 
 class BaseRepository:

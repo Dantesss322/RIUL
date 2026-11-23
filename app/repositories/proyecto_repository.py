@@ -1,7 +1,7 @@
 """Consultas de proyectos y avances."""
 from sqlalchemy import func, select
 
-from app.estensions import db
+from app.extensions import db
 from app.models import AvanceProyecto, Proyecto
 from app.repositories.base import BaseRepository, mapa
 

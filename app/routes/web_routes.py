@@ -5,7 +5,7 @@ se carga desde JavaScript (app/static/js) llamando a la API.
 """
 from flask import Blueprint, redirect, render_template, request, url_for
 
-from app.utils.response import fail
+from app.utils.response import error
 
 web_bp = Blueprint("web", __name__)
 
@@ -73,5 +73,5 @@ def explorar(tipo):
 def no_encontrada(_error):
     """Las paginas desconocidas muestran la plantilla 404; la API responde con el sobre JSON."""
     if request.path.startswith("/api/"):
-        return fail("La ruta solicitada no existe.", 404)
+        return error("La ruta solicitada no existe.", 404)
     return render_template("404.html"), 404

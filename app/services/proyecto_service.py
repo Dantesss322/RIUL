@@ -2,9 +2,9 @@
 from app.repositories.gamificacion_repository import LogroRepository
 from app.repositories.proyecto_repository import AvanceRepository, ProyectoRepository
 from app.repositories.semillero_repository import SemilleroRepository
-from app.schemas.base import vista
-from app.schemas.gamificacion import LogroSchema
-from app.schemas.proyecto import AvanceSchema, ProyectoSchema
+from app.schemas.base_schema import vista
+from app.schemas.gamificacion_schema import LogroSchema
+from app.schemas.proyecto_schema import AvanceSchema, ProyectoSchema
 from app.services.permisos import es_lider_de, es_miembro_activo, obtener_o_404, semillero_o_404
 from app.utils.constantes import ADMINISTRADOR
 from app.utils.db import transaccional

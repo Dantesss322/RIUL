@@ -1,7 +1,7 @@
 """Consultas de gamificacion: tipos de logro, niveles, insignias y logros."""
 from sqlalchemy import func, select
 
-from app.estensions import db
+from app.extensions import db
 from app.models import Insignia, Logro, Nivel, Semillero, SemilleroInsignia, TipoLogro, UsuarioInsignia
 from app.repositories.base import BaseRepository, mapa
 

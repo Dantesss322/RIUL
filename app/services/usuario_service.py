@@ -5,7 +5,7 @@ from app.repositories.gamificacion_repository import LogroRepository, OtorgadaRe
 from app.repositories.proyecto_repository import ProyectoRepository
 from app.repositories.semillero_repository import SemilleroRepository
 from app.repositories.usuario_repository import UsuarioRepository
-from app.schemas.usuario import UsuarioSchema
+from app.schemas.usuario_schema import UsuarioSchema
 from app.services.gamificacion_service import vista_insignia_obtenida
 from app.services.permisos import obtener_o_404
 from app.utils.constantes import ADMINISTRADOR, DOCENTE_LIDER

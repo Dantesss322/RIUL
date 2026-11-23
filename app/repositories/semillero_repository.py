@@ -1,7 +1,7 @@
 """Consultas de semilleros, integrantes, vinculaciones y seguimiento."""
 from sqlalchemy import select
 
-from app.estensions import db
+from app.extensions import db
 from app.models import Facultad, SeguimientoSemillero, Semillero, SemilleroIntegrante
 from app.repositories.base import BaseRepository
 from app.utils.constantes import ADMINISTRADOR, DOCENTE_LIDER

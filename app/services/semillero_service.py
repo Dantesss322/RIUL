@@ -5,9 +5,9 @@ from app.repositories.proyecto_repository import ProyectoRepository
 from app.repositories.semillero_repository import IntegranteRepository, SemilleroRepository
 from app.repositories.usuario_repository import UsuarioRepository
 from app.repositories.base import existe_referencia
-from app.schemas.base import vista
-from app.schemas.proyecto import ProyectoSchema
-from app.schemas.semillero import IntegranteSchema, SemilleroSchema
+from app.schemas.base_schema import vista
+from app.schemas.proyecto_schema import ProyectoSchema
+from app.schemas.semillero_schema import IntegranteSchema, SemilleroSchema
 from app.services.gamificacion_service import progresos_de_semilleros, vista_insignia_obtenida
 from app.services.notificacion_service import notificar
 from app.services.permisos import es_lider_de, es_miembro_activo, gestiona, obtener_o_404, semillero_o_404

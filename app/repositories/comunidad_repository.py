@@ -1,7 +1,7 @@
 """Consultas de la comunidad: publicaciones, interacciones y notificaciones."""
 from sqlalchemy import func, or_, select, update
 
-from app.estensions import db
+from app.extensions import db
 from app.models import Interaccion, Notificacion, Publicacion
 from app.repositories.base import BaseRepository, mapa
 

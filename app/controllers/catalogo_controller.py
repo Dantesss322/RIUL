@@ -1,7 +1,7 @@
 """Controladores de los catalogos administrables (estructura academica y reglas de gamificacion)."""
 from app.controllers.crud_controller import ControladorCrud
-from app.schemas.academico import FacultadSchema, ProgramaSchema
-from app.schemas.gamificacion import InsigniaSchema, NivelSchema, TipoLogroSchema
+from app.schemas.academico_schema import FacultadSchema, ProgramaSchema
+from app.schemas.gamificacion_schema import InsigniaSchema, NivelSchema, TipoLogroSchema
 from app.services import catalogo_service
 
 facultades = ControladorCrud(catalogo_service.facultades, FacultadSchema)

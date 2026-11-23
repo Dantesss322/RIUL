@@ -9,10 +9,10 @@ from marshmallow import ValidationError
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import HTTPException
 
-from app.estensions import db, jwt
-from app.utils.response import fail
+from app.extensions import db, jwt
+from app.utils.response import error
 
-ERROR_SISTEMA = "Ocurrió un error en el sistema. Intenta de nuevo en unos minutos."
+ERROR_SISTEMA = "Ocurrió un exc en el sistema. Intenta de nuevo en unos minutos."
 
 # Mensajes genericos de los campos (schemas/base.py) que se completan con el nombre del campo.
 GENERICOS = {
@@ -71,47 +71,47 @@ def registrar_manejadores(app):
     """Conecta los errores de la aplicacion con el sobre de respuesta de la API."""
 
     @app.errorhandler(ApiError)
-    def _api(error):
-        return fail(error.mensaje, error.status, error.details)
+    def _api(exc):
+        return error(exc.mensaje, exc.status, exc.details)
 
     @app.errorhandler(ValidationError)
-    def _validacion(error):
-        detalles = _detalles(error.normalized_messages())
+    def _validacion(exc):
+        detalles = _detalles(exc.normalized_messages())
         faltan = any(m.startswith("Falta:") for mensajes in detalles.values() for m in mensajes)
         mensaje = "Completa los campos obligatorios." if faltan else DatosInvalidos.mensaje
-        return fail(mensaje, 422, detalles)
+        return error(mensaje, 422, detalles)
 
     @app.errorhandler(IntegrityError)
-    def _integridad(error):
+    def _integridad(exc):
         db.session.rollback()
-        app.logger.warning("Conflicto de integridad: %s", error.orig)
+        app.logger.warning("Conflicto de integridad: %s", exc.orig)
         # Los borrados con dependientes se validan antes; lo que llega aqui es casi siempre un duplicado.
-        return fail("Ya existe un registro con esos datos.", 409)
+        return error("Ya existe un registro con esos datos.", 409)
 
     @app.errorhandler(HTTPException)
-    def _http(error):
+    def _http(exc):
         if not request.path.startswith("/api/"):
-            return error
-        if error.code == 413:
-            return fail("El archivo supera el tamaño permitido (10 MB).", 413)
-        if error.code == 405:
-            return fail("Método no permitido para esta ruta.", 405)
-        return fail(error.description or ERROR_SISTEMA, error.code or 500)
+            return exc
+        if exc.code == 413:
+            return error("El archivo supera el tamaño permitido (10 MB).", 413)
+        if exc.code == 405:
+            return error("Método no permitido para esta ruta.", 405)
+        return error(exc.description or ERROR_SISTEMA, exc.code or 500)
 
     @app.errorhandler(Exception)
-    def _sistema(error):
+    def _sistema(exc):
         db.session.rollback()
         app.logger.exception("Error no controlado")
         if request.path.startswith("/api/"):
-            return fail(ERROR_SISTEMA, 500)
-        raise error
+            return error(ERROR_SISTEMA, 500)
+        raise exc
 
     # Sesion JWT: toda falla de autenticacion es un 401 con texto para el usuario.
     @jwt.unauthorized_loader
     @jwt.invalid_token_loader
     def _sin_token(_motivo):
-        return fail(NoAutenticado.mensaje, 401)
+        return error(NoAutenticado.mensaje, 401)
 
     @jwt.expired_token_loader
     def _vencido(_cabecera, _datos):
-        return fail("Tu sesión expiró. Inicia sesión nuevamente.", 401)
+        return error("Tu sesión expiró. Inicia sesión nuevamente.", 401)

@@ -10,8 +10,8 @@ from collections import defaultdict
 from app.repositories.gamificacion_repository import InsigniaRepository, LogroRepository, NivelRepository, OtorgadaRepository
 from app.repositories.semillero_repository import SemilleroRepository
 from app.repositories.usuario_repository import UsuarioRepository
-from app.schemas.base import vista
-from app.schemas.gamificacion import InsigniaSchema
+from app.schemas.base_schema import vista
+from app.schemas.gamificacion_schema import InsigniaSchema
 from app.utils.constantes import ADMINISTRADOR
 
 

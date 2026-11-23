@@ -1,15 +1,9 @@
-"""Estructura academica: facultades y programas."""
+"""Modelo Programa (tabla `programa`)."""
 from sqlalchemy import ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.estensions import db
-
-
-class Facultad(db.Model):
-    __tablename__ = "facultad"
-
-    id: Mapped[int] = mapped_column("id_facultad", primary_key=True)
-    nombre: Mapped[str] = mapped_column(String(150), unique=True)
+from app.extensions import db
+from app.models.facultad import Facultad
 
 
 class Programa(db.Model):

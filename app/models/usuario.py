@@ -1,14 +1,11 @@
-"""Usuarios de la plataforma (RF-1).
-
-La solicitud de registro es un usuario en estado `pendiente`; no existe una tabla aparte.
-"""
+"""Modelo Usuario (tabla `usuario`)."""
 from datetime import datetime
 
 from sqlalchemy import Enum, ForeignKey, Index, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.estensions import db
-from app.models.academico import Programa
+from app.extensions import db
+from app.models.programa import Programa
 from app.utils.constantes import ESTADOS_USUARIO, ESTUDIANTE, ROLES
 from app.utils.fechas import ahora
 

@@ -1,6 +1,6 @@
 """Notificaciones por usuario (RF-3.2). El frontend las consulta cada 30 segundos."""
 from app.repositories.comunidad_repository import NotificacionRepository
-from app.schemas.comunidad import NotificacionSchema
+from app.schemas.comunidad_schema import NotificacionSchema
 from app.services.permisos import obtener_o_404
 from app.utils.db import transaccional
 from app.utils.errors import NoEncontrado

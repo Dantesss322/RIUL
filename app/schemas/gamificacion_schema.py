@@ -2,7 +2,7 @@
 from marshmallow import fields, validate
 
 from app.models import Proyecto, Semillero, TipoLogro
-from app.schemas.base import BaseSchema, Entero, Evidencia, FechaHora, Texto, existe, opcion
+from app.schemas.base_schema import BaseSchema, Entero, Evidencia, FechaHora, Texto, existe, opcion
 from app.utils.constantes import AMBITOS_INSIGNIA
 
 

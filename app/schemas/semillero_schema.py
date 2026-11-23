@@ -2,7 +2,7 @@
 from marshmallow import fields, validate
 
 from app.models import Facultad, Usuario
-from app.schemas.base import BaseSchema, Entero, FechaHora, Texto, existe, opcion
+from app.schemas.base_schema import BaseSchema, Entero, FechaHora, Texto, existe, opcion
 from app.utils.constantes import ROLES_INTEGRANTE
 
 

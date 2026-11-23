@@ -4,7 +4,7 @@ from functools import wraps
 from flask import g
 from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
 
-from app.estensions import db
+from app.extensions import db
 from app.models import Usuario
 from app.utils.errors import NoAutenticado, Prohibido
 

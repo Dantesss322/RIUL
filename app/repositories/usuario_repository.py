@@ -1,7 +1,7 @@
 """Consultas de usuarios."""
 from sqlalchemy import select
 
-from app.estensions import db
+from app.extensions import db
 from app.models import Programa, Usuario
 from app.repositories.base import BaseRepository
 from app.utils.constantes import ADMINISTRADOR, ESTUDIANTE

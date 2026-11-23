@@ -2,7 +2,7 @@
 from marshmallow import fields
 
 from app.models import Semillero
-from app.schemas.base import BaseSchema, Booleano, Entero, Evidencia, FechaHora, Texto, existe, opcion
+from app.schemas.base_schema import BaseSchema, Booleano, Entero, Evidencia, FechaHora, Texto, existe, opcion
 from app.utils.constantes import CATEGORIAS_PUBLICACION
 
 SIN_COMENTARIO = "Escribe un comentario antes de enviarlo."

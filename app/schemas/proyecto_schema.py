@@ -2,7 +2,7 @@
 from marshmallow import fields, validate
 
 from app.models import Semillero
-from app.schemas.base import BaseSchema, Booleano, Entero, Evidencia, FechaHora, Texto, existe, opcion
+from app.schemas.base_schema import BaseSchema, Booleano, Entero, Evidencia, FechaHora, Texto, existe, opcion
 from app.utils.constantes import ESTADOS_PROYECTO
 
 
