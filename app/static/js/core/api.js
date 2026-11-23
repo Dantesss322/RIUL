@@ -107,6 +107,3 @@ export const publicoApi = {
   inicio: () => http.get('/public/home'),
   listar: (tipo) => http.get(`/public/${tipo}`),
 };
-
-/** Solo con el backend simulado: restablece los datos de demostracion. */
-export const mockApi = { restablecer: () => http.post('/mock/reset') };

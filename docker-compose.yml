@@ -7,9 +7,12 @@ services:
     # localhost:5000 -> contenedor:5000
     ports:
       - "5000:5000"
-    # Variables de entorno (DATABASE_URL, JWT_SECRET_KEY, USE_MOCKS)
+    # Variables de entorno (DATABASE_URL, JWT_SECRET_KEY, ADMIN_*)
     env_file:
       - .env
+    # Las evidencias subidas por los usuarios sobreviven a reconstruir la imagen
+    volumes:
+      - uploads_data:/app/uploads
     # La aplicacion arranca cuando la base de datos esta lista
     depends_on:
       db:
@@ -39,3 +42,4 @@ services:
 
 volumes:
   mysql_data:
+  uploads_data:

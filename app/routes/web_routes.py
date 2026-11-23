@@ -3,7 +3,9 @@
 Cada pagina es una plantilla de `app/templates`. La informacion que muestran
 se carga desde JavaScript (app/static/js) llamando a la API.
 """
-from flask import Blueprint, redirect, render_template, url_for
+from flask import Blueprint, redirect, render_template, request, url_for
+
+from app.utils.response import fail
 
 web_bp = Blueprint("web", __name__)
 
@@ -69,4 +71,7 @@ def explorar(tipo):
 
 @web_bp.app_errorhandler(404)
 def no_encontrada(_error):
+    """Las paginas desconocidas muestran la plantilla 404; la API responde con el sobre JSON."""
+    if request.path.startswith("/api/"):
+        return fail("La ruta solicitada no existe.", 404)
     return render_template("404.html"), 404

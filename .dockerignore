@@ -17,6 +17,9 @@ venv/
 # Pruebas
 .pytest_cache/
 
+# Evidencias subidas por los usuarios (viven en el volumen uploads_data)
+uploads/
+
 # Base de datos
 mysql_data
 

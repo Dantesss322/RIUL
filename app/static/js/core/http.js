@@ -8,17 +8,11 @@
  *  - clasifica los fallos: 4xx = advertencia (lo corrige la persona), 5xx o red = error del sistema.
  *
  * Opcion por peticion: { silent: true } suprime las alertas (consultas en segundo plano).
- *
- * Con `use_mocks` activo (meta `riul-mocks`), las peticiones no salen a la red: las atiende el
- * backend simulado de js/mock. Al construir el backend real basta con poner USE_MOCKS=false en .env.
  */
 import { session } from './session.js';
 import { notify } from './notify.js';
 
-const usarSimulacion = document.querySelector('meta[name="riul-mocks"]')?.content === 'true';
-const adapter = usarSimulacion ? (await import('../mock/adapter.js')).adapter : undefined;
-
-export const http = axios.create({ baseURL: '/api', adapter });
+export const http = axios.create({ baseURL: '/api' });
 
 http.interceptors.request.use((config) => {
   const token = session.get()?.token;
@@ -58,5 +52,3 @@ http.interceptors.response.use(
     return Promise.reject(error);
   },
 );
-
-export { usarSimulacion };

@@ -4,9 +4,7 @@
  * La estructura HTML (sidebar y topbar) la entregan las plantillas partials/_sidebar.html y _topbar.html.
  */
 import { html, mount, on } from './html.js';
-import { notificacionesApi, mockApi } from './api.js';
-import { usarSimulacion } from './http.js';
-import { notify } from './notify.js';
+import { notificacionesApi } from './api.js';
 import { session } from './session.js';
 import { rutaActual, rutasDeMenu } from './routes.js';
 import { avatar, icon } from './ui.js';
@@ -104,19 +102,6 @@ export function iniciarShell() {
   iniciarCajonMovil();
 
   document.getElementById('btn-logout').addEventListener('click', cerrarSesion);
-
-  const reset = document.getElementById('btn-reset');
-  reset.hidden = !usarSimulacion;
-  reset.addEventListener('click', async () => {
-    const acepta = await notify.confirm({
-      title: 'Restablecer datos de demostración',
-      text: 'Se perderán los cambios hechos durante la demostración y se cerrará la sesión.',
-      confirmText: 'Restablecer',
-    });
-    if (!acepta) return;
-    await mockApi.restablecer();
-    cerrarSesion();
-  });
 
   return user;
 }

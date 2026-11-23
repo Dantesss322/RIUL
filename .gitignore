@@ -15,5 +15,8 @@ venv/
 .DS_Store
 Thumbs.db
 
+# Evidencias subidas por los usuarios
+uploads/
+
 # Pruebas
 .pytest_cache/

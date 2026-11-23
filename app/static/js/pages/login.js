@@ -7,9 +7,8 @@ import { withLoading, intentar } from '../core/ui.js';
 import { authApi } from '../core/api.js';
 import { formValues } from '../core/form.js';
 import { session } from '../core/session.js';
-import { usarSimulacion } from '../core/http.js';
 
-export default async function iniciar({ root }) {
+export default function iniciar({ root }) {
   if (session.get()) {
     window.location.replace('/app');
     return;
@@ -28,11 +27,4 @@ export default async function iniciar({ root }) {
     event.preventDefault();
     entrar(formValues(event.currentTarget), event.currentTarget.querySelector('[type="submit"]'));
   });
-
-  if (usarSimulacion) {
-    const { DEMO_PASSWORD } = await import('../mock/db.js');
-    root.querySelectorAll('[data-demo]').forEach((boton) =>
-      boton.addEventListener('click', () => entrar({ correo: boton.dataset.demo, password: DEMO_PASSWORD }, boton)),
-    );
-  }
 }

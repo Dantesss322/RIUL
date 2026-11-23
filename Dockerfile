@@ -28,5 +28,7 @@ COPY . .
 # Puerto
 EXPOSE 5000
 
-# Gunicorn ejecuta la aplicacion Flask (objeto `app` de run.py)
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "3", "run:app"]
+# Gunicorn ejecuta la aplicacion Flask (objeto `app` de run.py).
+# --preload carga la aplicacion una sola vez antes de crear los workers: asi las tablas y los
+# datos base se crean una vez y no compiten tres procesos por hacerlo al mismo tiempo.
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "3", "--preload", "run:app"]
